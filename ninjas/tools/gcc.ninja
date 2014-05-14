@@ -1,0 +1,25 @@
+# Definitions for C compiler
+c11annex = -D__STDC_WANT_LIB_EXT1__=1
+# -D__STDC_WANT_LIB_EXT2__=1
+cstandard = -std=c11 $c11annex
+cnoannoying = -Wno-error=padded -Wno-sign-conversion
+cwarnings = -Wall -Wextra -Wno-unused-variable -Wpedantic -pedantic $cnoannoying
+csanitize = -fsanitize=address -fsanitize=leak -fsanitize=undefined
+csanextra = -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=unreachable $
+            -fsanitize=vla-bound -fsanitize=null -fsanitize=return $
+            -fsanitize=signed-integer-overflow
+# Memory sanitize only supported on Linux at present...
+csanmem = -fsanitize=memory -fsanitize-memory-track-origins=2
+# Warns on unsigned overflow; useful to check occasionally, but is too annoying to enable
+# always.
+cannoying = -fsanitize=integer
+csafety = -fstack-protector-all
+carch = -march=native
+coptim = -O3 $carch
+cdebug = -g -O0
+
+cflags = $cdebug $cstandard $cwarnings $carch $csafety $csanitize $csanextra $coptim
+cflags_optim = $cstandard $cwarnings $coptim
+depsflag = -MMD -MF
+
+include ninjas/tools/fe-gcc.ninja

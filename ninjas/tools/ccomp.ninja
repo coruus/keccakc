@@ -1,0 +1,22 @@
+rule ccomp_cat
+  command = ./scripts/ccomp_cat.sh $in > $out.i.c ; ccomp -interp $out.i.c > $out.trace
+
+rule ccomp
+  command = ./scripts/ccomp_cat.sh $in > $out.i.c ; ccomp -g -v -o $out $out.i.c
+
+v = verification/compcert
+
+base = keccak/constructions/sponge.c libutil/memclear.c
+build $v/test0-shake-opt64: ccomp_cat $
+  keccak/constructions/sponge.c keccak/keccak/keccakf.c $
+  keccak/keccak/keccakf-1600/keccakf-opt64.c $
+  libutil/memclear.c $
+  keccak/fips202/shake/shake128.c keccak/fips202/shake/shake256.c $
+  keccak/tests/test0-shake.c
+
+build $v/test0-sha3-opt64: ccomp_cat $
+  keccak/constructions/sponge.c keccak/keccak/keccakf.c $
+  keccak/keccak/keccakf-1600/keccakf-opt64.c $
+  libutil/memclear.c $
+  $sha3/sha3_224.c $sha3/sha3_256.c $sha3/sha3_384.c $sha3/sha3_512.c $
+  keccak/tests/test0-sha3.c

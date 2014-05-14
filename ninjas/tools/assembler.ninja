@@ -1,0 +1,7 @@
+# Definitions for assembler
+asm = yasm
+asmsyntax = -p nasm --prefix=_
+asmflags = $asmsyntax -m amd64 -f macho64 -D__linux__
+
+rule asm
+  command = $asm $asmflags -o $out $in

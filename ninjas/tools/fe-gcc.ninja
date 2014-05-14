@@ -1,0 +1,20 @@
+# Definitions for GCC-compatible front-ends
+rule c
+  deps = gcc
+  depfile = $out.d
+  command = $cc $depsflag $out.d $cflags -c $in -o $out
+
+rule dylib
+  deps = gcc
+  depfile = $out.d
+  command = $cc $cflags $depsflag $out.d $in $shared_object -o $out
+
+rule cexec
+  deps = gcc
+  depfile = $out.d
+  command = $cc $depsflag $out.d $cflags $in -o $out
+
+rule cexec_optim
+  deps = gcc
+  depfile = $out.d
+  command = $cc $depsflag $out.d $cflags_optim $in -o $out

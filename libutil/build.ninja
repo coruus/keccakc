@@ -1,0 +1,6 @@
+# A small utility library for testing.
+build $b/tsc.o: asm $s/tsc.s
+build $b/memclear.o: c $s/memclear.c
+  cflags = -g -march=native -O3
+build $b/libclear.$so: dylib $b/memclear.o
+build $b/libutil.$so: dylib $b/memclear.o $b/tsc.o

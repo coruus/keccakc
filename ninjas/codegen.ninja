@@ -1,0 +1,15 @@
+# Generate SHA-3 implementations
+build $sha3/sha3_224.c $sha3/sha3_256.c $sha3/sha3_384.c $sha3/sha3_512.c $
+      $sha3/sha3_224.h $sha3/sha3_256.h $sha3/sha3_384.h $sha3/sha3_512.h: $
+        script scripts/gen_sha3_instances.sh | $sha3.template.c $sha3.template.h
+
+# Genrate SHAKE implementations
+build $shake/shake128.c $shake/shake256.c $shake/shake128.h $shake/shake256.h: $
+  script scripts/gen_shake_instances.sh | $shake.template.c $shake.template.h
+
+# Generate unrolled xorinto implementation
+build keccak/utils/xorinto-unrolled.gen.h: pygen scripts/genxorinto.py
+
+# Generate Keccak-f implementations
+build $p/keccak/keccakf-1600/keccakf-pygen.gen.c: $
+  pygen scripts/keccakgen/keccakf_compact_unrolled.py

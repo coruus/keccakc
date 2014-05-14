@@ -1,0 +1,6 @@
+rule pygen
+  command = python $in > $out
+
+rule script
+  command = $in
+
