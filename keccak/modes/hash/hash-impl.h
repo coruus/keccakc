@@ -2,6 +2,7 @@
 #define KECCAK_MODES_HASH_IMPL_H
 #include "keccak/config.h"
 #include "keccak/constructions/sponge-helpers-impl.h"
+#include "keccak/constructions/sponge-impl.h"
 #include "keccak/constructions/sponge.h"
 #include "keccak/keccak/keccak-1600.h"
 #include "keccak/modes/hash/dsbits.h"
@@ -49,16 +50,10 @@ static INLINE int _hash_finalize(register keccak_sponge* const restrict sponge,
   // Xor in the MBR padding end-bit.
 
   // Safety/correctness condition:
-  //@ assert(sponge->absorbed < (sponge->rate - 1));
+  //@ assert(sponge->absorbed <= (sponge->rate - 1));
   state[sponge->rate - 1] ^= pad_end;
+  state[sponge->absorbed] ^= lastbyte;
 
-  // Absorb the last byte (including the MBR padding start-bit)
-  // (This may cause the permutation to be applied.)
-  uint8_t byte = lastbyte;
-  err = keccak_sponge_absorb(sponge, &byte, 1);
-  //@ assert(err == 0);
-
-  // printstate(state);
   // Apply the permutation.
   keccakf(sponge->a);
   // And take the sponge out of the absorbing state.

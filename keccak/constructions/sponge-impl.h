@@ -30,7 +30,7 @@ static INLINE size_t _sponge_absorb_once(register keccak_sponge* const restrict 
   }
 }
 
-/*@ requires valid_sponge(sponge);
+/*@ //requires valid_sponge(sponge);
   @ requires 0 <= sponge->rate < 200;
   @ requires sponge->squeezed < sponge->rate;
   @ ensures sponge->squeezed < sponge->rate;
@@ -84,12 +84,12 @@ static INLINE size_t _sponge_squeeze_once(register keccak_sponge* const restrict
   return squeezed;
 }
 
-/*@ //requires valid_sponge(sponge);
-    requires \valid(out+(0..outlen-1));
-    requires sponge_invariant(sponge);
-    assigns sponge->a[0..24], sponge->squeezed;
-    ensures \result == 0;
-    ensures \old(sponge_invariant(sponge)) ==> sponge_invariant(sponge);
+/*@ requires valid_sponge(sponge);
+  @ requires \valid(out+(0..outlen-1));
+  @ requires sponge_invariant(sponge);
+  @ assigns sponge->a[0..24], sponge->squeezed;
+  @ ensures \result == 0;
+  @ ensures \old(sponge_invariant(sponge)) ==> sponge_invariant(sponge);
  */
 static INLINE int _sponge_squeeze(register keccak_sponge* const restrict sponge,
                                   register uint8_t* const restrict out,
@@ -116,11 +116,11 @@ static INLINE int _sponge_squeeze(register keccak_sponge* const restrict sponge,
 }
 
 /*@ requires \valid(sponge);
-    requires \valid(in+(0..inlen-1));
-    requires sponge->absorbed < sponge->rate;
-    ensures sponge->absorbed < sponge->rate;
-    assigns sponge->a[0..24], sponge->squeezed;
-    ensures \result == 0;
+  @ requires \valid(in+(0..inlen-1));
+  @ requires sponge->absorbed < sponge->rate;
+  @ ensures sponge->absorbed < sponge->rate;
+  @ assigns sponge->a[0..24], sponge->squeezed;
+  @ ensures \result == 0;
  */
 static INLINE int _sponge_absorb(register keccak_sponge* const restrict sponge,
                                  register const uint8_t* const restrict in,
@@ -131,11 +131,11 @@ static INLINE int _sponge_absorb(register keccak_sponge* const restrict sponge,
   while (remaining) {
     //@assert remaining > 0;
     register size_t absorbed = _sponge_absorb_once(sponge, &in[inpos], remaining);
-    //@ assert absorbed > 0;
+    //@ assert absorbed > 0;  // progress
+    //@ assert (remaining - absorbed) > 0; // no overflow
     remaining -= absorbed;
-    // Safety:
-    //@ assert remaining >= 0;
     inpos += absorbed;
+    //@ assert remaining == (inlen - inpos);
   }
   // @assert inpos == inlen;
   // @assert remaining == 0;
