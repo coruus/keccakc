@@ -17,6 +17,13 @@
     }                 \
   } while (0)
 
+#define checkoutlen        \
+  do {                     \
+    if (outlen != 32) {    \
+      SOFT_RTE(digestlen); \
+    }                      \
+  } while (0)
+
 /*@ behavior error:
       assumes sponge == \null;
       ensures \result == 0;
@@ -66,13 +73,6 @@ int sha3_256_update(register keccak_sponge* const restrict sponge,
   HANDLE_ERR;
   return 0;
 }
-
-#define checkoutlen        \
-  do {                     \
-    if (outlen != 32) {    \
-      SOFT_RTE(digestlen); \
-    }                      \
-  } while (0)
 
 /*@ predicate sha3_256_digest_err(keccak_sponge* sponge, uint8_t* out, size_t outlen) =
       (sponge == \null) || (out == \null) || (outlen != 32)
@@ -138,15 +138,15 @@ int sha3_256(register uint8_t* const restrict out,
 
   keccak_sponge sponge;
   int err = 0;
-  err = sha3_256_init(&sponge);
-  //@ assert(err == 0);
+  err = sha3_256_init(&sponge);  //@ assert(err == 0);
   HANDLE_ERR;
-  err = sha3_256_update(&sponge, in, inlen);
-  //@ assert(err == 0);
+  err = sha3_256_update(&sponge, in, inlen);  //@ assert(err == 0);
   HANDLE_ERR;
-  err = sha3_256_digest(&sponge, out, outlen);
-  //@ assert(err == 0);
+  err = sha3_256_digest(&sponge, out, outlen);  //@ assert(err == 0);
   HANDLE_ERR;
   memclear(&sponge, sizeof(sponge));
   return err;
 }
+
+#undef HANDLE_ERR
+#undef checkoutlen

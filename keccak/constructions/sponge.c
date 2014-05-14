@@ -25,6 +25,7 @@ int keccak_sponge_checkinv(register const keccak_sponge* const sponge) {
    permutation is not applied on calls which will fail; we thus leave this
    to keccak_sponge_{absorb,squeeze}.)
 */
+// TODO: refactor and split to sponge-impl.h
 int keccak_sponge_absorb(register keccak_sponge* const restrict sponge,
                          register const uint8_t* const restrict in,
                          register const size_t inlen) {
