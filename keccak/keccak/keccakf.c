@@ -12,7 +12,7 @@
  */
 void keccakf(register void* const istate) {
   uint64_t state[25];
-  //if (((uintptr_t)istate & alignof(uint64_t)) != 0) {
+  // if (((uintptr_t)istate & alignof(uint64_t)) != 0) {
   memcpy(state, istate, 200);
   _keccakf_aligned((uint64_t*)state);
   memcpy(istate, state, 200);

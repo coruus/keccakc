@@ -12,7 +12,7 @@ static INLINE int _xorinto(uint8_t* const restrict dest,
                            const uint8_t* const restrict in,
                            const size_t oplen) {
   switch (oplen) {
-    #include "keccak/utils/xorinto-unrolled.gen.h"
+#include "keccak/utils/xorinto-unrolled.gen.h"
     default:
       //@ loop variant oplen - i;
       // pragma unroll 200;

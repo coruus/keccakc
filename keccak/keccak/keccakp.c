@@ -18,7 +18,7 @@ void _keccakf_aligned(uint64_t* const A) {
  *
  * TODO(dlg): More efficient version for common case; memclear
  * means that it can't be fully optimized away.
- 
+
 void keccakf(register void* const istate) {
   uint64_t state[25];
   memcpy(state, istate, 200);

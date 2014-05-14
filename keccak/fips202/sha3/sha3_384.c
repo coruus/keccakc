@@ -57,8 +57,8 @@ int sha3_384_init(register keccak_sponge* const restrict sponge) {
     disjoint behaviors;
 */
 int sha3_384_update(register keccak_sponge* const restrict sponge,
-                  register const uint8_t* const restrict in,
-                  register const size_t inlen) {
+                    register const uint8_t* const restrict in,
+                    register const size_t inlen) {
   checknull(sponge);
   checknull(in);
   int err = _hash_update(sponge, in, inlen, flag_sha3_384 ^ hash_absorbing);
@@ -67,11 +67,11 @@ int sha3_384_update(register keccak_sponge* const restrict sponge,
   return 0;
 }
 
-#define checkoutlen                \
-  do {                             \
-    if (outlen != 48) { \
-      SOFT_RTE(digestlen);         \
-    }                              \
+#define checkoutlen        \
+  do {                     \
+    if (outlen != 48) {    \
+      SOFT_RTE(digestlen); \
+    }                      \
   } while (0)
 
 /*@ predicate sha3_384_digest_err(keccak_sponge* sponge, uint8_t* out, size_t outlen) =
@@ -92,8 +92,8 @@ int sha3_384_update(register keccak_sponge* const restrict sponge,
    disjoint behaviors;
 */
 int sha3_384_digest(register keccak_sponge* const restrict sponge,
-                  register uint8_t* const restrict out,
-                  register const size_t outlen) {
+                    register uint8_t* const restrict out,
+                    register const size_t outlen) {
   checkoutlen;
   checknull(sponge);
   checknull(out);
@@ -129,9 +129,9 @@ int sha3_384_digest(register keccak_sponge* const restrict sponge,
     disjoint behaviors;
 */
 int sha3_384(register uint8_t* const restrict out,
-           register const size_t outlen,
-           register const uint8_t* const restrict in,
-           register const size_t inlen) {
+             register const size_t outlen,
+             register const uint8_t* const restrict in,
+             register const size_t inlen) {
   checknull(out);
   checknull(in);
   checkoutlen;

@@ -116,3 +116,4 @@ Session.vim
 .frama-c
 README.html
 perf/
+.machine_name

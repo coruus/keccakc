@@ -1,0 +1,30 @@
+llvm revision
+llvm@ad5d56c16825b96f7e3e6a206d1ac55de744bfe3
+--------------------
+clang version
+clang version 3.5.0 
+Target: x86_64-apple-darwin13.2.0
+Thread model: posix
+--------------------
+gcc version
+Using built-in specs.
+COLLECT_GCC=gcc-4.9
+COLLECT_LTO_WRAPPER=/usr/local/Cellar/gcc49/HEAD/libexec/gcc/x86_64-apple-darwin13.2.0/4.9.1/lto-wrapper
+Target: x86_64-apple-darwin13.2.0
+Configured with: ../configure --build=x86_64-apple-darwin13.2.0 --prefix=/usr/local/Cellar/gcc49/HEAD --enable-languages=c,c++,fortran,java,objc,obj-c++ --program-suffix=- --with-gmp=/usr/local/opt/gmp4 --with-mpfr=/usr/local/opt/mpfr2 --with-mpc=/usr/local/opt/libmpc08 --with-cloog=/usr/local/opt/cloog018 --with-isl=/usr/local/opt/isl011 --with-system-zlib --enable-version-specific-runtime-libs --enable-libstdcxx-time=yes --enable-stage1-checking --enable-checking=release --enable-lto --disable-werror --enable-plugin --disable-nls --with-ecj-jar=/usr/local/opt/ecj/share/java/ecj.jar --enable-multilib
+Thread model: posix
+gcc version 4.9.1 20140513 (prerelease) (GCC) 
+--------------------
+ccomp version
+The CompCert C verified compiler, version 2.2
+--------------------
+frama-c version
+Version: Neon-20140301
+Compilation date: Sat Apr 26 10:19:35 EDT 2014
+Share path: /usr/local/share/frama-c (may be overridden with FRAMAC_SHARE variable)
+Library path: /usr/local/lib/frama-c (may be overridden with FRAMAC_LIB variable)
+Plug-in paths: /usr/local/lib/frama-c/plugins (may be overridden with FRAMAC_PLUGIN variable)
+--------------------
+valgrind version
+valgrind-3.10.0.SVN
+--------------------
