@@ -1,3 +1,6 @@
+#ifndef KECCAK_TESTS_TEST_KATS_INPUT_H
+#define KECCAK_TESTS_TEST_KATS_INPUT_H
+#include <stdint.h>
 static const uint8_t in[] = {0xcc,
                              0x41,
                              0xfb,
@@ -32638,3 +32641,4 @@ static const uint8_t in[] = {0xcc,
                              0xeb,
                              0xae,
                              0xb1};
+#endif

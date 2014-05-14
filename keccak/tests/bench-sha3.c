@@ -4,7 +4,7 @@
 #include "keccak/constructions/sponge.h"
 #include "keccak/fips202/sha3.h"
 #include "keccak/tests/helpers-impl.h"
-#include "keccak/tests/test1_sha3_kat_input.h"
+#include "keccak/tests/test-kats-input.h"
 #include "libutil/tsc.h"
 
 #define bench(DIGESTLEN)                                       \

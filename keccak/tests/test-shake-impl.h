@@ -2,25 +2,26 @@
  */
 #include <assert.h>
 #include <stdint.h>
-#include "keccak/fips202/sha3.h"
+#include "keccak/fips202/shake.h"
 #include "keccak/constructions/sponge.h"
 #include "keccak/tests/helpers-impl.h"
-#include "keccak/tests/test1_sha3_kat_input.h"
+#include "keccak/tests/test-kats-input.h"
+#include "keccak/tests/test-kats.h"
 
 #define TEST(BITS, BYTES)                        \
-  int test_sha3_##BITS(void);                    \
-  int test_sha3_##BITS(void) {                   \
+  int test_shake##BITS(void);                    \
+  int test_shake##BITS(void) {                   \
     keccak_sponge sponge;                        \
     const uint8_t* inpos = in;                   \
     for (size_t len = 0; len < 256; len++) {     \
       uint8_t out[BYTES] = {0};                  \
       uint8_t outs[BYTES] = {0};                 \
                                                  \
-      sha3_##BITS##_init(&sponge);               \
-      sha3_##BITS##_update(&sponge, inpos, len); \
-      sha3_##BITS##_digest(&sponge, out, BYTES); \
+      shake##BITS##_init(&sponge);               \
+      shake##BITS##_update(&sponge, inpos, len); \
+      shake##BITS##_digest(&sponge, out, BYTES); \
                                                  \
-      sha3_##BITS(outs, BYTES, inpos, len);      \
+      shake##BITS(outs, BYTES, inpos, len);      \
       if (memcmp(out, outs, BYTES) != 0) {       \
         fprintf(stderr, "FAIL!!!!!");            \
       }                                          \
@@ -31,19 +32,20 @@
     return 0;                                    \
   }
 
-#define test(BITS) TEST(BITS, (BITS / 8))
+#define test(BITS) TEST(BITS, 512)
 
 #define runtest(BITS)          \
   do {                         \
-    err |= test_sha3_##BITS(); \
+    err |= test_shake##BITS(); \
     assert(err == 0);          \
   } while (0)
 
-test(224) test(256) test(384) test(512) int main(void) {
+test(128) test(256) int test_shake(void) {
   int err = 0;
-  runtest(224);
+  runtest(128);
   runtest(256);
-  runtest(384);
-  runtest(512);
   return err;
 }
+#undef TEST
+#undef test
+#undef runtest

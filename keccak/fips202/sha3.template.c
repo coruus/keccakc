@@ -103,7 +103,8 @@ int SHA3FN_digest(register keccak_sponge* const restrict sponge,
   //@ assert err == 0;
   HANDLE_ERR;
   // Clear the high bytes of the state -- which can never be output for the
-  // FOFs -- before copying output. TODO(dlg): Is this optimization-safe?
+  // FOFs -- before copying output (this ensures that, if used as a PMAC,
+  // the state can't be recovered even if we abort due to error writing output).
   memclear((uint8_t*)sponge->a + 64, 200 - 64);
   err = _hash_squeeze(sponge, out, DIGEST_LENGTH, flag_SHA3FN ^ hash_squeezing);
   //@ assert err == 0;

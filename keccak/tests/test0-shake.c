@@ -3,7 +3,7 @@
  * It is also checked by the byte-length KAT tests.
  */
 #include <stdint.h>
-#include "keccak/fips202/sha3.h"
+#include "keccak/fips202/shake.h"
 #include "keccak/constructions/sponge.h"
 #include "keccak/tests/helpers-impl.h"
 #include "keccak/tests/test0_shake_kats.h"

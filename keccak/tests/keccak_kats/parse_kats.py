@@ -8,38 +8,53 @@ from more_itertools import grouper
 
 plen = parse.compile('Len = {}').parse
 pmsg = parse.compile('Msg = {}').parse
-pmd  = parse.compile('MD = {}').parse
-psqeezed = parse.compi
+pdigest  = parse.compile('MD = {}').parse
+psqueezed = parse.compile('Squeezed = {}').parse
 
 
-fnames = [['ShortMsgKAT_SHA3-224.txt', 0],
-          ['ShortMsgKAT_SHA3-256.txt', 1],
-          ['ShortMsgKAT_SHA3-384.txt', 2],
-          ['ShortMsgKat_SHA3-512.txt', 3],
-          ['ShortMsgKat_SHAKE128.txt', 4],
-          ['ShortMsgKat_SHAKE256.txt', 5]]
+def pmd(message):
+    parse = pdigest(message)
+    if parse is None:
+        parse = psqueezed(message)
+    return parse
+
+fnames = ['ShortMsgKAT_SHA3-224.txt',
+          'ShortMsgKAT_SHA3-256.txt',
+          'ShortMsgKAT_SHA3-384.txt',
+          'ShortMsgKat_SHA3-512.txt',
+          'ShortMsgKat_SHAKE128.txt',
+          'ShortMsgKat_SHAKE256.txt']
 import struct
 from os.path import splitext
-ostruct = struct.Struct('BHH')
+ostruct = struct.Struct('HH')
 
-def parse_kats(filename, function):
-    lines = open(filename + '.recs').read().split('\n')[:-1]
+def parse_kats(filename):
+    lines = open(filename.split('.')[0] + '.recs').read().split('\n')[:-1]
+    outtxt = []
     out = bytes()
     for inlen, msg, md in grouper(3, lines):
-        inlen = plen(inlen)[0]
+        r = [inlen, msg, md]
+        ilen = int(plen(inlen)[0])
+        if (ilen % 8) != 0:
+            continue
+        outtxt.extend([inlen, msg, md])
         msg = pmsg(msg)[0]
         md = pmd(md)[0]
-        if (int(inlen) % 8) != 0:
-            continue
         msg = unhexlify(msg)
         md = unhexlify(md)
         outlen = len(md)
         inlen = len(msg)
-        out += ostruct.pack(function, inlen, outlen)
+        out += ostruct.pack(inlen, outlen)
         out += msg
         out += md
     with open(filename.split('.')[0] + '.bin', 'wb') as f:
         f.write(out)
+    return outtxt
 
-for filename, function in fnames:
-    parse_kats(filename, function)
+out = []
+for filename in fnames:
+    out.extend(parse_kats(filename))
+
+with open('kats_combined.txt', 'wb') as f:
+    f.write('\n'.join(out))
+

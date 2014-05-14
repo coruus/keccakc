@@ -1,4 +1,4 @@
-typedef signed char int8_t;
+typedef __signed char int8_t;
 typedef short int16_t;
 typedef int int32_t;
 typedef long long int64_t;
@@ -591,16 +591,16 @@ int setrlimit(int, const struct rlimit*) __asm(
     "setrlimit"
     "$UNIX2003");
 
-static inline uint16_t _OSSwapInt16(uint16_t data) {
+static __inline__ uint16_t _OSSwapInt16(uint16_t data) {
   return ((__uint16_t)((((__uint16_t)(data)&0xff00) >> 8) |
                        (((__uint16_t)(data)&0x00ff) << 8)));
 }
-static inline uint32_t _OSSwapInt32(uint32_t data) {
+static __inline__ uint32_t _OSSwapInt32(uint32_t data) {
   return ((__uint32_t)(
       (((__uint32_t)(data)&0xff000000) >> 24) | (((__uint32_t)(data)&0x00ff0000) >> 8) |
       (((__uint32_t)(data)&0x0000ff00) << 8) | (((__uint32_t)(data)&0x000000ff) << 24)));
 }
-static inline uint64_t _OSSwapInt64(uint64_t data) {
+static __inline__ uint64_t _OSSwapInt64(uint64_t data) {
   return ((__uint64_t)((((__uint64_t)(data)&0xff00000000000000ULL) >> 56) |
                        (((__uint64_t)(data)&0x00ff000000000000ULL) >> 40) |
                        (((__uint64_t)(data)&0x0000ff0000000000ULL) >> 24) |
@@ -1878,7 +1878,7 @@ int keccak_sponge_absorb(register keccak_sponge* const restrict sponge,
                          register const size_t inlen) {
   if ((in == ((void*)0)) || (inlen > (4294967295UL >> 1))) {
     do {
-      fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 99, err_rsize);
+      fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 100, err_rsize);
       return errno_rsize;
     } while (0);
   }
@@ -1886,7 +1886,7 @@ int keccak_sponge_absorb(register keccak_sponge* const restrict sponge,
     int err = _sponge_checkinv(sponge);
     if (err != 0) {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 101, err_sponge_invariant);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 102, err_sponge_invariant);
         return errno_sponge_invariant;
       } while (0);
     }
@@ -1902,7 +1902,7 @@ int keccak_sponge_squeeze(register keccak_sponge* const restrict sponge,
                           register const size_t outlen) {
   if ((out == ((void*)0)) || (outlen > (4294967295UL >> 1))) {
     do {
-      fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 114, err_rsize);
+      fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 115, err_rsize);
       return errno_rsize;
     } while (0);
   }
@@ -1910,7 +1910,7 @@ int keccak_sponge_squeeze(register keccak_sponge* const restrict sponge,
     int err = _sponge_checkinv(sponge);
     if (err != 0) {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 116, err_sponge_invariant);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 117, err_sponge_invariant);
         return errno_sponge_invariant;
       } while (0);
     }
@@ -4603,7 +4603,7 @@ static inline int _hash_update(register keccak_sponge* const restrict sponge,
       fprintf(__stderrp,
               "%s:%u: soft rte: %s\n",
               "keccak/modes/hash/hash-impl.h",
-              29,
+              30,
               err_hash_flags);
       return errno_hash_flags;
     } while (0);
@@ -4622,7 +4622,7 @@ static inline int _hash_finalize(register keccak_sponge* const restrict sponge,
       fprintf(__stderrp,
               "%s:%u: soft rte: %s\n",
               "keccak/modes/hash/hash-impl.h",
-              42,
+              43,
               err_hash_finalized);
       return errno_hash_finalized;
     } while (0);
@@ -4631,15 +4631,14 @@ static inline int _hash_finalize(register keccak_sponge* const restrict sponge,
       fprintf(__stderrp,
               "%s:%u: soft rte: %s\n",
               "keccak/modes/hash/hash-impl.h",
-              44,
+              45,
               err_hash_flags);
       return errno_hash_flags;
     } while (0);
   }
   register uint8_t* state = (uint8_t*)sponge->a;
   state[sponge->rate - 1] ^= pad_end;
-  uint8_t byte = lastbyte;
-  err = keccak_sponge_absorb(sponge, &byte, 1);
+  state[sponge->absorbed] ^= lastbyte;
   keccakf(sponge->a);
   sponge->absorbed = 0;
   sponge->flags = newflags;
@@ -4657,7 +4656,7 @@ static inline int _hash_squeeze(register keccak_sponge* const restrict sponge,
       fprintf(__stderrp,
               "%s:%u: soft rte: %s\n",
               "keccak/modes/hash/hash-impl.h",
-              78,
+              73,
               err_hash_not_finalized);
       return errno_hash_not_finalized;
     } while (0);
@@ -4666,7 +4665,7 @@ static inline int _hash_squeeze(register keccak_sponge* const restrict sponge,
       fprintf(__stderrp,
               "%s:%u: soft rte: %s\n",
               "keccak/modes/hash/hash-impl.h",
-              80,
+              75,
               err_hash_flags);
       return errno_hash_flags;
     } while (0);
@@ -4677,7 +4676,7 @@ int sha3_224_init(register keccak_sponge* const restrict sponge) {
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2813, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2821, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4688,7 +4687,7 @@ int sha3_224_init(register keccak_sponge* const restrict sponge) {
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2816, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2824, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -4701,7 +4700,7 @@ int sha3_224_update(register keccak_sponge* const restrict sponge,
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2841, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2849, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4709,7 +4708,7 @@ int sha3_224_update(register keccak_sponge* const restrict sponge,
   do {
     if (in == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2842, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2850, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4720,7 +4719,7 @@ int sha3_224_update(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2845, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2853, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -4733,7 +4732,7 @@ int sha3_224_digest(register keccak_sponge* const restrict sponge,
   do {
     if (outlen != 28) {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2876, err_digestlen);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2877, err_digestlen);
         return errno_digestlen;
       } while (0);
     }
@@ -4741,7 +4740,7 @@ int sha3_224_digest(register keccak_sponge* const restrict sponge,
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2877, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2878, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4749,7 +4748,7 @@ int sha3_224_digest(register keccak_sponge* const restrict sponge,
   do {
     if (out == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2878, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2879, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4761,7 +4760,7 @@ int sha3_224_digest(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2883, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2884, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -4774,7 +4773,7 @@ int sha3_224_digest(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2891, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2892, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -4788,7 +4787,7 @@ int sha3_224(register uint8_t* const restrict out,
   do {
     if (out == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2914, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2915, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4796,7 +4795,7 @@ int sha3_224(register uint8_t* const restrict out,
   do {
     if (in == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2915, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2916, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4804,7 +4803,7 @@ int sha3_224(register uint8_t* const restrict out,
   do {
     if (outlen != 28) {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2916, err_digestlen);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2917, err_digestlen);
         return errno_digestlen;
       } while (0);
     }
@@ -4828,7 +4827,7 @@ int sha3_224(register uint8_t* const restrict out,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2925, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2924, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -4839,7 +4838,7 @@ int sha3_224(register uint8_t* const restrict out,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2928, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2926, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -4851,7 +4850,7 @@ int sha3_256_init(register keccak_sponge* const restrict sponge) {
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2965, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2973, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4862,7 +4861,7 @@ int sha3_256_init(register keccak_sponge* const restrict sponge) {
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2968, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2976, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -4875,7 +4874,7 @@ int sha3_256_update(register keccak_sponge* const restrict sponge,
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2993, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3001, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4883,7 +4882,7 @@ int sha3_256_update(register keccak_sponge* const restrict sponge,
   do {
     if (in == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 2994, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3002, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4894,7 +4893,7 @@ int sha3_256_update(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 2997, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3005, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -4907,7 +4906,7 @@ int sha3_256_digest(register keccak_sponge* const restrict sponge,
   do {
     if (outlen != 32) {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3028, err_digestlen);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3029, err_digestlen);
         return errno_digestlen;
       } while (0);
     }
@@ -4915,7 +4914,7 @@ int sha3_256_digest(register keccak_sponge* const restrict sponge,
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3029, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3030, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4923,7 +4922,7 @@ int sha3_256_digest(register keccak_sponge* const restrict sponge,
   do {
     if (out == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3030, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3031, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4935,7 +4934,7 @@ int sha3_256_digest(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3035, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3036, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -4948,7 +4947,7 @@ int sha3_256_digest(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3043, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3044, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -4962,7 +4961,7 @@ int sha3_256(register uint8_t* const restrict out,
   do {
     if (out == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3066, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3067, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4970,7 +4969,7 @@ int sha3_256(register uint8_t* const restrict out,
   do {
     if (in == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3067, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3068, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -4978,7 +4977,7 @@ int sha3_256(register uint8_t* const restrict out,
   do {
     if (outlen != 32) {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3068, err_digestlen);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3069, err_digestlen);
         return errno_digestlen;
       } while (0);
     }
@@ -5002,7 +5001,7 @@ int sha3_256(register uint8_t* const restrict out,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3077, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3076, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5013,7 +5012,7 @@ int sha3_256(register uint8_t* const restrict out,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3080, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3078, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5025,7 +5024,7 @@ int sha3_384_init(register keccak_sponge* const restrict sponge) {
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3117, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3125, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5036,7 +5035,7 @@ int sha3_384_init(register keccak_sponge* const restrict sponge) {
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3120, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3128, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5049,7 +5048,7 @@ int sha3_384_update(register keccak_sponge* const restrict sponge,
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3145, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3153, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5057,7 +5056,7 @@ int sha3_384_update(register keccak_sponge* const restrict sponge,
   do {
     if (in == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3146, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3154, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5068,7 +5067,7 @@ int sha3_384_update(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3149, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3157, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5081,7 +5080,7 @@ int sha3_384_digest(register keccak_sponge* const restrict sponge,
   do {
     if (outlen != 48) {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3180, err_digestlen);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3181, err_digestlen);
         return errno_digestlen;
       } while (0);
     }
@@ -5089,7 +5088,7 @@ int sha3_384_digest(register keccak_sponge* const restrict sponge,
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3181, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3182, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5097,7 +5096,7 @@ int sha3_384_digest(register keccak_sponge* const restrict sponge,
   do {
     if (out == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3182, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3183, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5109,7 +5108,7 @@ int sha3_384_digest(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3187, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3188, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5122,7 +5121,7 @@ int sha3_384_digest(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3195, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3196, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5136,7 +5135,7 @@ int sha3_384(register uint8_t* const restrict out,
   do {
     if (out == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3218, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3219, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5144,7 +5143,7 @@ int sha3_384(register uint8_t* const restrict out,
   do {
     if (in == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3219, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3220, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5152,7 +5151,7 @@ int sha3_384(register uint8_t* const restrict out,
   do {
     if (outlen != 48) {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3220, err_digestlen);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3221, err_digestlen);
         return errno_digestlen;
       } while (0);
     }
@@ -5176,7 +5175,7 @@ int sha3_384(register uint8_t* const restrict out,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3229, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3228, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5187,7 +5186,7 @@ int sha3_384(register uint8_t* const restrict out,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3232, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3230, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5199,7 +5198,7 @@ int sha3_512_init(register keccak_sponge* const restrict sponge) {
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3269, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3277, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5210,7 +5209,7 @@ int sha3_512_init(register keccak_sponge* const restrict sponge) {
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3272, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3280, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5223,7 +5222,7 @@ int sha3_512_update(register keccak_sponge* const restrict sponge,
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3297, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3305, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5231,7 +5230,7 @@ int sha3_512_update(register keccak_sponge* const restrict sponge,
   do {
     if (in == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3298, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3306, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5242,7 +5241,7 @@ int sha3_512_update(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3301, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3309, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5255,7 +5254,7 @@ int sha3_512_digest(register keccak_sponge* const restrict sponge,
   do {
     if (outlen != 64) {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3332, err_digestlen);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3333, err_digestlen);
         return errno_digestlen;
       } while (0);
     }
@@ -5263,7 +5262,7 @@ int sha3_512_digest(register keccak_sponge* const restrict sponge,
   do {
     if (sponge == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3333, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3334, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5271,7 +5270,7 @@ int sha3_512_digest(register keccak_sponge* const restrict sponge,
   do {
     if (out == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3334, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3335, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5283,7 +5282,7 @@ int sha3_512_digest(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3339, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3340, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5296,7 +5295,7 @@ int sha3_512_digest(register keccak_sponge* const restrict sponge,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3347, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3348, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5310,7 +5309,7 @@ int sha3_512(register uint8_t* const restrict out,
   do {
     if (out == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3370, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3371, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5318,7 +5317,7 @@ int sha3_512(register uint8_t* const restrict out,
   do {
     if (in == ((void*)0)) {
       do {
-        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3371, err_ptrnull);
+        fprintf(__stderrp, "%s:%u: hard rte: %s\n", "<stdin>", 3372, err_ptrnull);
         return errno_ptrnull;
       } while (0);
     }
@@ -5326,7 +5325,7 @@ int sha3_512(register uint8_t* const restrict out,
   do {
     if (outlen != 64) {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3372, err_digestlen);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3373, err_digestlen);
         return errno_digestlen;
       } while (0);
     }
@@ -5350,7 +5349,7 @@ int sha3_512(register uint8_t* const restrict out,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3381, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3380, err_sha3);
         return errno_sha3;
       } while (0);
     }
@@ -5361,7 +5360,7 @@ int sha3_512(register uint8_t* const restrict out,
       break;
     } else {
       do {
-        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3384, err_sha3);
+        fprintf(__stderrp, "%s:%u: soft rte: %s\n", "<stdin>", 3382, err_sha3);
         return errno_sha3;
       } while (0);
     }
