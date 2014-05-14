@@ -1,4 +1,4 @@
-typedef __signed char int8_t;
+typedef signed char int8_t;
 typedef short int16_t;
 typedef int int32_t;
 typedef long long int64_t;
@@ -591,16 +591,16 @@ int setrlimit(int, const struct rlimit*) __asm(
     "setrlimit"
     "$UNIX2003");
 
-static __inline__ uint16_t _OSSwapInt16(uint16_t data) {
+static inline uint16_t _OSSwapInt16(uint16_t data) {
   return ((__uint16_t)((((__uint16_t)(data)&0xff00) >> 8) |
                        (((__uint16_t)(data)&0x00ff) << 8)));
 }
-static __inline__ uint32_t _OSSwapInt32(uint32_t data) {
+static inline uint32_t _OSSwapInt32(uint32_t data) {
   return ((__uint32_t)(
       (((__uint32_t)(data)&0xff000000) >> 24) | (((__uint32_t)(data)&0x00ff0000) >> 8) |
       (((__uint32_t)(data)&0x0000ff00) << 8) | (((__uint32_t)(data)&0x000000ff) << 24)));
 }
-static __inline__ uint64_t _OSSwapInt64(uint64_t data) {
+static inline uint64_t _OSSwapInt64(uint64_t data) {
   return ((__uint64_t)((((__uint64_t)(data)&0xff00000000000000ULL) >> 56) |
                        (((__uint64_t)(data)&0x00ff000000000000ULL) >> 40) |
                        (((__uint64_t)(data)&0x0000ff0000000000ULL) >> 24) |
