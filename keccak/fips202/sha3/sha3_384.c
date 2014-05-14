@@ -17,11 +17,11 @@
     }                 \
   } while (0)
 
-#define checkoutlen        \
-  do {                     \
-    if (outlen != 48) {    \
-      SOFT_RTE(digestlen); \
-    }                      \
+#define checkoutlen                \
+  do {                             \
+    if (outlen != 48) { \
+      SOFT_RTE(digestlen);         \
+    }                              \
   } while (0)
 
 /*@ behavior error:
@@ -64,8 +64,8 @@ int sha3_384_init(register keccak_sponge* const restrict sponge) {
     disjoint behaviors;
 */
 int sha3_384_update(register keccak_sponge* const restrict sponge,
-                    register const uint8_t* const restrict in,
-                    register const size_t inlen) {
+                  register const uint8_t* const restrict in,
+                  register const size_t inlen) {
   checknull(sponge);
   checknull(in);
   int err = _hash_update(sponge, in, inlen, flag_sha3_384 ^ hash_absorbing);
@@ -92,8 +92,8 @@ int sha3_384_update(register keccak_sponge* const restrict sponge,
    disjoint behaviors;
 */
 int sha3_384_digest(register keccak_sponge* const restrict sponge,
-                    register uint8_t* const restrict out,
-                    register const size_t outlen) {
+                  register uint8_t* const restrict out,
+                  register const size_t outlen) {
   checkoutlen;
   checknull(sponge);
   checknull(out);
@@ -103,7 +103,8 @@ int sha3_384_digest(register keccak_sponge* const restrict sponge,
   //@ assert err == 0;
   HANDLE_ERR;
   // Clear the high bytes of the state -- which can never be output for the
-  // FOFs -- before copying output. TODO(dlg): Is this optimization-safe?
+  // FOFs -- before copying output (this ensures that, if used as a PMAC,
+  // the state can't be recovered even if we abort due to error writing output).
   memclear((uint8_t*)sponge->a + 64, 200 - 64);
   err = _hash_squeeze(sponge, out, 48, flag_sha3_384 ^ hash_squeezing);
   //@ assert err == 0;
@@ -129,9 +130,9 @@ int sha3_384_digest(register keccak_sponge* const restrict sponge,
     disjoint behaviors;
 */
 int sha3_384(register uint8_t* const restrict out,
-             register const size_t outlen,
-             register const uint8_t* const restrict in,
-             register const size_t inlen) {
+           register const size_t outlen,
+           register const uint8_t* const restrict in,
+           register const size_t inlen) {
   checknull(out);
   checknull(in);
   checkoutlen;

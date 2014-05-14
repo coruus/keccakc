@@ -12,20 +12,18 @@ int shake256_init(register keccak_sponge* const restrict sponge) {
 }
 
 int shake256_update(register keccak_sponge* const restrict sponge,
-                    register const uint8_t* const restrict in,
-                    register const size_t inlen) {
+                   register const uint8_t* const restrict in,
+                   register const size_t inlen) {
   return _hash_update(sponge, in, inlen, flag_shake256 ^ hash_absorbing);
 }
 
 int shake256_digest(register keccak_sponge* const restrict sponge,
-                    register uint8_t* const restrict out,
-                    register const size_t outlen) {
+                   register uint8_t* const restrict out,
+                   register const size_t outlen) {
   int err = 0;
   if (sponge->flags == (flag_shake256 ^ hash_absorbing)) {
-    err = _hash_finalize(sponge,
-                         pad_shake,
-                         flag_shake256 ^ hash_absorbing,
-                         flag_shake256 ^ hash_squeezing);
+    err = _hash_finalize(
+        sponge, pad_shake, flag_shake256 ^ hash_absorbing, flag_shake256 ^ hash_squeezing);
     if (err != 0) {
       return err;
     }
@@ -45,9 +43,9 @@ int shake256_digest(register keccak_sponge* const restrict sponge,
     ensures \result == 0;
 */
 int shake256(register uint8_t* const restrict out,
-             register const size_t outlen,
-             register const uint8_t* const restrict in,
-             register const size_t inlen) {
+            register const size_t outlen,
+            register const uint8_t* const restrict in,
+            register const size_t inlen) {
   keccak_sponge sponge;
   int err = 0;
   err = shake256_init(&sponge);

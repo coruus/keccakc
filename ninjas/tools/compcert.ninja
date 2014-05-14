@@ -1,15 +1,19 @@
 # Definitions for CompCert, which doesn't support emitting depfiles
 cc = ccomp
-shared_object = -Wl,-shared 
+shared_object = -Wl,-shared
 cstandard = -g -v
 c32 = -Wl,-m32
 cflags = $cstandard $c32
+cflags_optim = $cstandard $c32
 
-rule cc
+rule c
   command = $cc $cflags -c $in -o $out
 
 rule dylib
-  command = $cc $cflags $shared_object $in -o $out
+  command = clang-3.5 -shared $in -o $out
 
 rule cexec
+  command = $cc $cflags $in -o $out
+
+rule cexec_optim
   command = $cc $cflags $in -o $out

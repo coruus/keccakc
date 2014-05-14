@@ -2,13 +2,16 @@ include ninjas/tools/assembler.ninja
 include ninjas/tools/scripts.ninja
 
 shared_object = -shared
-#cc = gcc-4.9
-#include ninjas/tools/gcc.ninja
+cc = gcc-4.9
+include ninjas/tools/gcc.ninja
 
-cc = clang-3.5
-include ninjas/tools/clang.ninja
+#cc = clang-3.5
+#include ninjas/tools/clang.ninja
+
+#include ninjas/tools/compcert.ninja
 
 clocal = -I.
 cflags = $cflags $clocal
+#cflags_optim = $cflags
 cflags_optim = $cflags_optim $clocal
 so = dylib
