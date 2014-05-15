@@ -45,7 +45,7 @@ And also mad props to Ronny Van Keer, whose charming assembler
 implementations of Keccak introduced me to the permutation.
 
 The opt64 and varopt64 implementations of the permutation are
-entirely their work (plus CPP and clang-format).
+entirely their work (and some contribution from CPP and clang-format).
 
 ### Notes
 
@@ -75,6 +75,8 @@ that the code is safe and correct.
 Note, especially, that there are no test cases for SHAKE with
 non-zero input length at present.
 
+Anything in an experimental subdirectory is just that; an experiment.
+
 ## Building
 
 To build this project, become a daimyo. You will then have enough
@@ -85,7 +87,8 @@ and file a pull request with your build environment.
 (Your changes don't have to be pretty; I'll do that work.)
 
 The library *should* build in any C11-compliant environment that
-provides the `memcpy` and `memset` functions.
+provides the `memcpy` and `memset` functions and defines the
+(optional) fixed-width `uint8_t` and `uint64_t` types.
 
 The tests require a hosted environment at present; they use `stdio.h`.
 I consider this a bug.

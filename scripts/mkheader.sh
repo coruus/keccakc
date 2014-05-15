@@ -5,5 +5,5 @@ cat >> "$1" <<HEADER_TEMPLATE
 #ifndef ${header_name}
 #define ${header_name}
 
-#endif
+#endif  // ${header_name}
 HEADER_TEMPLATE

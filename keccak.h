@@ -144,3 +144,4 @@ int keccak_sponge_squeeze_xor(register keccak_sponge* const restrict sponge,
                               register uint8_t* const restrict out,
                               register const size_t outlen);
 */
+#endif  // KECCAK_H

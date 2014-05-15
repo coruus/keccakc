@@ -17,11 +17,11 @@
     }                 \
   } while (0)
 
-#define checkoutlen                \
-  do {                             \
-    if (outlen != 28) { \
-      SOFT_RTE(digestlen);         \
-    }                              \
+#define checkoutlen        \
+  do {                     \
+    if (outlen != 28) {    \
+      SOFT_RTE(digestlen); \
+    }                      \
   } while (0)
 
 /*@ behavior error:
@@ -64,8 +64,8 @@ int sha3_224_init(register keccak_sponge* const restrict sponge) {
     disjoint behaviors;
 */
 int sha3_224_update(register keccak_sponge* const restrict sponge,
-                  register const uint8_t* const restrict in,
-                  register const size_t inlen) {
+                    register const uint8_t* const restrict in,
+                    register const size_t inlen) {
   checknull(sponge);
   checknull(in);
   int err = _hash_update(sponge, in, inlen, flag_sha3_224 ^ hash_absorbing);
@@ -92,8 +92,8 @@ int sha3_224_update(register keccak_sponge* const restrict sponge,
    disjoint behaviors;
 */
 int sha3_224_digest(register keccak_sponge* const restrict sponge,
-                  register uint8_t* const restrict out,
-                  register const size_t outlen) {
+                    register uint8_t* const restrict out,
+                    register const size_t outlen) {
   checkoutlen;
   checknull(sponge);
   checknull(out);
@@ -130,9 +130,9 @@ int sha3_224_digest(register keccak_sponge* const restrict sponge,
     disjoint behaviors;
 */
 int sha3_224(register uint8_t* const restrict out,
-           register const size_t outlen,
-           register const uint8_t* const restrict in,
-           register const size_t inlen) {
+             register const size_t outlen,
+             register const uint8_t* const restrict in,
+             register const size_t inlen) {
   checknull(out);
   checknull(in);
   checkoutlen;
