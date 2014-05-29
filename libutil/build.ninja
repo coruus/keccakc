@@ -1,6 +1,9 @@
 # A small utility library for testing.
+build libutil/memclear.scribble.gen: pygen scripts/genscribblestate.py
+build libutil/memclear.zero.gen: pygen scripts/genclearstate.py
 build $b/tsc.o: asm $s/tsc.s
-build $b/memclear.o: c $s/memclear.c
+build $b/memclear.o: c $s/memclear.c |
   cflags = $cflags_optim
+build $b/cycles.o: c $s/cycles.c
 build $b/libclear.$so: dylib $b/memclear.o
-build $b/libutil.$so: dylib $b/memclear.o $b/tsc.o
+build $b/libutil.$so: dylib $b/memclear.o $b/cycles.o $b/tsc.o

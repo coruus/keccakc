@@ -12,7 +12,7 @@
     keccak_sponge sponge;                                \
     uint8_t out[LEN / 8] = {0};                          \
     shake##LEN##_init(&sponge);                          \
-    uint64_t cycles = tscm();                            \
+    uint64_t cycles = cpucycles();                       \
     double absorbed = 0;                                 \
     for (size_t i = 0; i < 32640; i++) {                 \
       shake##LEN##_update(&sponge, in + i, 32640 - i);   \
@@ -26,7 +26,7 @@
     printf("SHAKE%u absorbed %llub at %f cpb (",         \
            LEN,                                          \
            (uint64_t)absorbed,                           \
-           (tscm() - cycles) / absorbed);                \
+           (cpucycles() - cycles) / absorbed);           \
     printf("%x %x %x)\n", out[0], out[1], out[2]);       \
   } while (0)
 

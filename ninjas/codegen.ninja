@@ -7,8 +7,9 @@ build $sha3/sha3_224.c $sha3/sha3_256.c $sha3/sha3_384.c $sha3/sha3_512.c $
 build $shake/shake128.c $shake/shake256.c $shake/shake128.h $shake/shake256.h: $
   script scripts/gen_shake_instances.sh | $shake.template.c $shake.template.h
 
-# Generate unrolled xorinto implementation
+# Generate unrolled implementations of basic primitves
 build keccak/utils/xorinto-unrolled.gen.h: pygen scripts/genxorinto.py
+
 
 # Generate Keccak-f implementations
 build $p/keccak/keccakf-1600/keccakf-pygen.gen.c: $

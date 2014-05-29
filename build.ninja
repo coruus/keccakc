@@ -24,6 +24,7 @@ build $b/libkeccak_sponge.c: cat_always_inline $keccakimpl $
   $sha3/sha3_224.c $sha3/sha3_256.c $sha3/sha3_384.c $sha3/sha3_512.c $
   $shake/shake128.c $shake/shake256.c
 
+cflags = $cflags_optim
 build $b/sponge.o: c keccak/constructions/sponge.c
 build $b/sha3_224.o: c keccak/fips202/sha3/sha3_224.c
 build $b/sha3_256.o: c keccak/fips202/sha3/sha3_256.c
@@ -31,6 +32,14 @@ build $b/sha3_384.o: c keccak/fips202/sha3/sha3_384.c
 build $b/sha3_512.o: c keccak/fips202/sha3/sha3_512.c
 build $b/shake128.o: c keccak/fips202/shake/shake128.c
 build $b/shake256.o: c keccak/fips202/shake/shake256.c
+build $b/keccakf_stub.o: c $p/keccak/keccakf.c
+build $b/keccakf.o: c_optim $keccakimpl
+build $b/libkeccak.$so: dylib $
+  $b/keccakf.o $b/keccakf_stub.o $
+  $b/sponge.o $
+  $b/sha3_224.o $b/sha3_256.o $b/sha3_384.o $b/sha3_512.o $
+  $b/shake128.o $b/shake256.o $
+  $b/libutil.dylib
 
 # The utility library
 s = libutil

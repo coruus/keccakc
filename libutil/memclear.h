@@ -1,6 +1,8 @@
-#ifndef UTILS_MEMCLEAR_H
-#define UTILS_MEMCLEAR_H
+#ifndef LIBUTIL_MEMCLEAR_H
+#define LIBUTIL_MEMCLEAR_H
 #include <stdlib.h>
 
-void memclear(void* const mem, const size_t len);
-#endif
+void memclear(void* const, const size_t);
+void state_scribble(void* const, const size_t);
+void state_clear(void* const);
+#endif  // LIBUTIL_MEMCLEAR_H

@@ -206,7 +206,7 @@ Any dynamic or static behavior that is undefined under either the C99
 or C11 standard is a bug; pull requests eagerly accepted.
 
 [keccak_site]: http://keccak.noekeon.org/
-[ninja_home]: http://martine.github.io/
+[ninja_home]: http://martine.github.io/ninja
 [fips202_site]: http://csrc.nist.gov/groups/ST/hash/sha-3/sha-3_standardization.html
 [clang_manual]: http://clang.llvm.org/docs/UsersManual.html
 [cbmc_site]: http://www.cprover.org/cbmc/

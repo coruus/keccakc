@@ -1,0 +1,24 @@
+E #ifndef LIBUTIL_MEMEQUALS_H
+E #define LIBUTIL_MEMEQUALS_H
+/* size_t memequalsX(void* src, uintX_t, size_t len);
+ *
+ * void* src: the buffer to check; no alignment requirement
+ * size_t len: the length, in bytes, of src
+ * uintX_t val: the value to compare against
+ */
+E #include "libutils/config.h"
+
+E #include <stdint.h>
+E #include <stdlib.h>
+
+MEMEQUALS_DECL(8) MEMEQUALS_DECL(16) MEMEQUALS_DECL(32) MEMEQUALS_DECL(64)
+
+E #ifdef LIBUTIL_GENERICS
+E #define vequals(buf, val, len)                           \\
+  _Generic((val), uint8_t : memequals8(buf, val, len),     \\
+                  uint16_t : memequals16(buf, val, len),   \\
+                  uint32_t : memequals32(buf, val, len),   \
+                  uint64_t : : memequals64(buf, val, len))
+E #endif // LIBUTIL_GENERICS
+
+E #endif  // LIBUTIL_MEMEQUALS_H

@@ -12,10 +12,12 @@ static INLINE int _xorinto(uint8_t* const restrict dest,
                            const uint8_t* const restrict in,
                            const size_t oplen) {
   switch (oplen) {
+#ifndef __FRAMAC__
 #include "keccak/utils/xorinto-unrolled.gen.h"
+#endif
+    //#endif
     default:
       //@ loop variant oplen - i;
-      // pragma unroll 200;
       for (size_t i = 0; i < oplen; i++) {
         //@ assert i < oplen;
         dest[i] = dest[i] ^ in[i];

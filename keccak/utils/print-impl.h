@@ -12,6 +12,20 @@
     STATEMENT;                          \
   }
 
+#define printnibble(byte)     \
+  if ((byte & 0xf) != 0) {    \
+    printf("%x", byte & 0xf); \
+  } else {                    \
+    printf("-");              \
+  }
+
+#define printbyte(byte)             \
+  do {                              \
+    uint8_t p = (byte & 0xf0) >> 4; \
+    printnibble(p);                 \
+    printnibble(byte);              \
+  } while (0)
+
 static inline void _printbuf(const void* const buf, register const size_t buflen) {
   register const uint8_t* const bytes = (uint8_t*)buf;
   for (size_t i = 0; i < buflen; i++) {
@@ -30,7 +44,7 @@ static inline void _printstateLE(uint64_t a[25]) {
   uint8_t buf[25 * 8];
   memcpy(buf, a, 25 * 8);
   for (int i = 0; i < 200; i++) {
-    ifnotmod(i, 8, printf(" ")) ifnotmod(i, 40, printf("\n")) printf("%02x", buf[i]);
+    ifnotmod(i, 8, printf(" ")) ifnotmod(i, 40, printf("\n")) printbyte(buf[i]);
   }
   printf("\n");
 }

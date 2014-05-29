@@ -1,0 +1,21 @@
+#define MEMEQUALS_DECL(BITS) \
+  size_t memequals ## BITS(    \
+      const void* const src, const uint ## BITS ## _t val, const size_t len);
+
+#define MEMEQUALS_DEF(BITS)                                                  \
+  size_t memequals ## BITS(                                                   \
+      const void* const src, const uint ## BITS ## _t val, const size_t len) { \
+    if ((src == NULL) || (len % (sizeof(val)) != 0)) {                       \
+      return SIZE_MAX;                                                       \
+    }                                                                        \
+    buf = (uint8_t*)src;                                                     \
+    size_t acc = 0;                                                          \
+    for (size_t i = 0; i < len; i += sizeof(val)) {                          \
+      uint ## _t bufval;                                                     \
+      memcpy(&bufval, buf[i], sizeof(bufval));                               \
+      acc += (size_t) !((bufval ^ val) == 0);                                \
+    }                                                                        \
+    return acc;                                                              \
+  }
+
+#define E

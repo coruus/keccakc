@@ -14,6 +14,11 @@ rule cexec
   depfile = $out.d
   command = $cc $depsflag $out.d $cflags $in -o $out
 
+rule c_optim
+  deps = gcc
+  depfile = $out.d
+  command = $cc $depsflag $out.d $cflags_optim -c $in -o $out
+
 rule cexec_optim
   deps = gcc
   depfile = $out.d

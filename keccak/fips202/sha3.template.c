@@ -104,12 +104,12 @@ int SHA3FN_digest(register keccak_sponge* const restrict sponge,
   HANDLE_ERR;
   // Clear the high bytes of the state -- which can never be output for the
   // FOFs -- before copying output (this ensures that, if used as a PMAC,
-  // the state can't be recovered even if we abort due to error writing output).
+  // the key can't be recovered even if we abort due to error writing output).
   memclear((uint8_t*)sponge->a + 64, 200 - 64);
   err = _hash_squeeze(sponge, out, DIGEST_LENGTH, flag_SHA3FN ^ hash_squeezing);
   //@ assert err == 0;
-  // Then clear the low bytes.
-  memclear(sponge, 32 * 8);
+  // Then scribble the rest of the state.
+  state_scribble(sponge);
   HANDLE_ERR;
   return 0;
 }
