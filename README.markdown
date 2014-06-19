@@ -185,7 +185,7 @@ Build the code. Then run `scripts/bench.sh`. (TODO) Performance targets.
 ### Lines of code
 
 `scripts/count.sh` computes the sloc metric for this project. Current
-value: 539.
+value: 579.
 
     % c_count \
         keccak/keccak/keccakf.c keccak/keccak/keccakf-1600.h keccak/keccak/keccak-1600.h \
