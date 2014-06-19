@@ -11,6 +11,9 @@ code.
 This is an alpha release; it has only been (very partially)
 verified.
 
+It is unnecessarily complex; see https://github.com/keccak-tiny
+for a small implementation.
+
 ## Introduction
 
 Design criteria:
@@ -86,6 +89,8 @@ Run ninja in the root; if it doesn't work, fix-up the ninja files,
 and file a pull request with your build environment.
 (Your changes don't have to be pretty; I'll do that work.)
 
+(Switching to Chrome's `gn` to generate ninjas at present.)
+
 The library *should* build in any C11-compliant environment that
 provides the `memcpy` and `memset` functions and defines the
 (optional) fixed-width `uint8_t` and `uint64_t` types.
@@ -101,7 +106,7 @@ Tools used:
 - [Frama-C][framac_site]'s Value Analysis and Weakest Preconditions
   plugins
 - [CompCert][compcert_site]
-- (TODO) Valgrind
+- Valgrind
 
 Tools under consideration:
 
@@ -128,7 +133,7 @@ In progress:
 
 Thinking about:
 
-- How to prove correctness of implementation
+- How to prove correctness of permutation implementation
 
 
 ## Tests and metrics

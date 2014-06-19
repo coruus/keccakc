@@ -1,0 +1,13 @@
+toolchain("clang_toolchain") {
+  lib_prefix = "-l"
+  lib_dir_prefix = "-L"
+  deps = "gcc"
+  tool("cc") {
+     command = "clang -MMD -MF \$out.d \$in -o \$out"
+     description = "clang \$in"
+  }
+
+  tool("asm") {
+     command = "yasm -p nasm --prefix=_ -m amd64 -f macho64 -D__linux__ -o \$out $in"
+  }
+}
