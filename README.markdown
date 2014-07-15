@@ -170,7 +170,7 @@ present in the `build` directory. Do, e.g.,
      MD = A69F73CCA23A9AC5C8B567DC185A756E97C982164FE25859E0D1DCC1475C80A615B2123AF1F5F94C11E3E9402C3AC558F500199D95B6D3E301758586281DCD26
      SHA3-512(''): OKAY
 
-Te following files will contain CompCert's output in interpreter
+The following files will contain CompCert's output in interpreter
 mode for the zero-length test-cases:
 
     verification/compcert/test0-sha3-opt64.trace

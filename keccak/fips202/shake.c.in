@@ -3,7 +3,6 @@
 
 #include "keccak/constructions/sponge.h"
 #include "keccak/fips202/flags.h"
-#include "keccak/fips202/shake.h"
 #include "keccak/modes/hash/hash-impl.h"
 #include "libutil/libutil.h"
 
