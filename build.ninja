@@ -10,8 +10,6 @@ f = $p/fips202
 sha3 = $p/fips202/sha3
 shake = $p/fips202/shake
 
-#include ninjas/codegen.ninja
-
 rule cat_always_inline
   command = cat $in | sed -e 's/inline /inline __attribute__((always_inline)) /' > $out
 rule cat
@@ -25,11 +23,10 @@ build $f/sha3.c: ginger $f/sha3.c.in
 build $f/shake.c: ginger $f/shake.c.in
 build keccak.h: ginger keccak.h.in
 
-build $b/libkeccak_sponge.c: cat_always_inline $keccakimpl $
+build $b/libkeccak.c: cat_always_inline $keccakimpl $
   $p/constructions/sponge.c $
   $p/keccak/keccakf.c $
-  $f/sha3.c $f/shake.c $
-  $t/test0-shake.c
+  $f/sha3.c $f/shake.c
 
 cflags = $cflags_optim
 build $b/sponge.o: c keccak/constructions/sponge.c
@@ -59,6 +56,6 @@ build $b/kats.txt: testkats
 s = libutil
 subninja libutil/build.ninja
 
-# The test cases
+# Verification
 #include ninjas/buildlines.ninja
 #include ninjas/tools/ccomp.ninja
