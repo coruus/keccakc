@@ -11,10 +11,28 @@ code.
 This is an alpha release; it has only been (very partially)
 verified.
 
+## Howto
+
+    #include "keccak.h"
+    ...
+    shake256(out, outlen, in, inlen);
+
+That's it. Or, if you really need to,
+
+    #include "keccak.h"
+    ...
+    keccak_sponge sponge;
+    shake256_init(&sponge);
+    shake256_update(&sponge, in, inlen);
+    shake256_digest(&sponge, out, outlen);
+
+
+## Defects
+
 It is unnecessarily complex; see https://github.com/keccak-tiny
 for a small implementation.
 
-## Introduction
+## Design
 
 Design criteria:
 
@@ -65,18 +83,11 @@ accepted; but these are insufficient. On studying thir code, I felt
 that the best way to understand their mistakes was to make my own.
 Thus this repository; and thus all the verification stuff.)
 
-### License
-
-3BSD at present; if you need CC0, email me.
-
 ## Warning
 
 Please don't use this code for anything other than testing at
 the moment; I will tag a release when I have sufficient confidence
 that the code is safe and correct.
-
-Note, especially, that there are no test cases for SHAKE with
-non-zero input length at present.
 
 Anything in an experimental subdirectory is just that; an experiment.
 
@@ -84,10 +95,6 @@ Anything in an experimental subdirectory is just that; an experiment.
 
 To build this project, become a daimyo. You will then have enough
 [ninjas][ninja_home].
-
-Run ninja in the root; if it doesn't work, fix-up the ninja files,
-and file a pull request with your build environment.
-(Your changes don't have to be pretty; I'll do that work.)
 
 (Switching to Chrome's `gn` to generate ninjas at present.)
 
