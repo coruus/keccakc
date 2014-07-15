@@ -8,7 +8,7 @@
 /* requires \valid(dest+(0..oplen-1)) && \valid_read(in+(0..oplen-1));
     assigns dest[0..oplen-1];
   */
-static INLINE int _xorinto(uint8_t* const restrict dest,
+static __attribute__((always_inline)) int _xorinto(uint8_t* const restrict dest,
                            const uint8_t* const restrict in,
                            const size_t oplen) {
   switch (oplen) {

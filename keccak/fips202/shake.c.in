@@ -1,3 +1,6 @@
+#define KECCAK_PRIVATE_API
+#include "keccak.h"
+
 #include "keccak/constructions/sponge.h"
 #include "keccak/fips202/flags.h"
 #include "keccak/fips202/shake.h"
@@ -6,31 +9,36 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+/*py:
+shakes = [128, 256]
+shake_sb = zip(shakes, [x//8 for x in shakes])
+*/
 
-int SHAKEFN_init(register keccak_sponge* const restrict sponge) {
-  return _hash_init(sponge, 200 - (SECURITY_STRENGTH * 2), flag_SHAKEFN ^ hash_absorbing);
+/*% for s, b in shake_sb */
+int shake`s`_init(register keccak_sponge* const restrict sponge) {
+  return _hash_init(sponge, 200 - (`b` * 2), flag_shake`s` ^ hash_absorbing);
 }
 
-int SHAKEFN_update(register keccak_sponge* const restrict sponge,
+int shake`s`_update(register keccak_sponge* const restrict sponge,
                    register const uint8_t* const restrict in,
                    register const size_t inlen) {
-  return _hash_update(sponge, in, inlen, flag_SHAKEFN ^ hash_absorbing);
+  return _hash_update(sponge, in, inlen, flag_shake`s` ^ hash_absorbing);
 }
 
-int SHAKEFN_digest(register keccak_sponge* const restrict sponge,
+int shake`s`_digest(register keccak_sponge* const restrict sponge,
                    register uint8_t* const restrict out,
                    register const size_t outlen) {
   int err = 0;
-  if (sponge->flags == (flag_SHAKEFN ^ hash_absorbing)) {
+  if (sponge->flags == (flag_shake`s` ^ hash_absorbing)) {
     err = _hash_finalize(
-        sponge, pad_shake, flag_SHAKEFN ^ hash_absorbing, flag_SHAKEFN ^ hash_squeezing);
+        sponge, pad_shake, flag_shake`s` ^ hash_absorbing, flag_shake`s` ^ hash_squeezing);
     if (err != 0) {
       return err;
     }
-  } else if (sponge->flags == (flag_SHAKEFN ^ hash_squeezing)) {
+  } else if (sponge->flags == (flag_shake`s` ^ hash_squeezing)) {
     return -1;
   }
-  err = _hash_squeeze(sponge, out, outlen, flag_SHAKEFN ^ hash_squeezing);
+  err = _hash_squeeze(sponge, out, outlen, flag_shake`s` ^ hash_squeezing);
 
   return err;
 }
@@ -42,18 +50,20 @@ int SHAKEFN_digest(register keccak_sponge* const restrict sponge,
     assigns out+(0..outlen-1);
     ensures \result == 0;
 */
-int SHAKEFN(register uint8_t* const restrict out,
+int shake`s`(register uint8_t* const restrict out,
             register const size_t outlen,
             register const uint8_t* const restrict in,
             register const size_t inlen) {
   keccak_sponge sponge;
   int err = 0;
-  err = SHAKEFN_init(&sponge);
+  err = shake`s`_init(&sponge);
   //@ assert(err == 0);
-  err = SHAKEFN_update(&sponge, in, inlen);
+  err = shake`s`_update(&sponge, in, inlen);
   //@ assert(err == 0);
-  err = SHAKEFN_digest(&sponge, out, outlen);
+  err = shake`s`_digest(&sponge, out, outlen);
   //@ assert(err == 0);
   memclear(&sponge, sizeof(sponge));
   return err;
 }
+
+/*% endfor */

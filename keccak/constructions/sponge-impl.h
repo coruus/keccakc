@@ -155,9 +155,9 @@ _sponge_squeeze_xor_once(register keccak_sponge* const restrict sponge,
     _xorinto(out, state, 200);   // Copy out the bytes we need,
     sponge->squeezed += outlen;  // advance the squeezed position,
     squeezed = outlen;           // and return #bytes squeezed.
-                                 //@ assert sponge->squeezed < sponge->rate;
-                                 //@ assert cansqueeze(sponge) > 0;
-                                 //@ assert squeezed >= 0;
+    /*@ assert sponge->squeezed < sponge->rate; */
+    /*@ assert cansqueeze(sponge) > 0; */
+    /*@ assert squeezed >= 0; */
   } else {
     // More output has been requested than we can sqeeze from the
     // sponge. So:

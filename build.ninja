@@ -6,39 +6,40 @@ t = $p/tests
 sponge = keccak/sponge/sponge.c
 kp = $p/keccak/keccakp-1600
 kf = $p/keccak/keccakf-1600
+f = $p/fips202
 sha3 = $p/fips202/sha3
 shake = $p/fips202/shake
 
-include ninjas/codegen.ninja
+#include ninjas/codegen.ninja
 
 rule cat_always_inline
   command = cat $in | sed -e 's/inline /inline __attribute__((always_inline)) /' > $out
 rule cat
   command = cat $in > $out
+rule ginger
+  command = ./scripts/ginger.py $in > $out
 
 keccakimpl = $p/keccak/keccakf-1600/keccakf-opt64.c
+
+build $f/sha3.c: ginger $f/sha3.c.in
+build $f/shake.c: ginger $f/shake.c.in
+build keccak.h: ginger keccak.h.in
 
 build $b/libkeccak_sponge.c: cat_always_inline $keccakimpl $
   $p/constructions/sponge.c $
   $p/keccak/keccakf.c $
-  $sha3/sha3_224.c $sha3/sha3_256.c $sha3/sha3_384.c $sha3/sha3_512.c $
-  $shake/shake128.c $shake/shake256.c
+  $f/sha3.c $f/shake.c
 
 cflags = $cflags_optim
 build $b/sponge.o: c keccak/constructions/sponge.c
-build $b/sha3_224.o: c keccak/fips202/sha3/sha3_224.c
-build $b/sha3_256.o: c keccak/fips202/sha3/sha3_256.c
-build $b/sha3_384.o: c keccak/fips202/sha3/sha3_384.c
-build $b/sha3_512.o: c keccak/fips202/sha3/sha3_512.c
-build $b/shake128.o: c keccak/fips202/shake/shake128.c
-build $b/shake256.o: c keccak/fips202/shake/shake256.c
+build $b/sha3.o: c keccak/fips202/sha3.c
+build $b/shake.o: c keccak/fips202/shake.c
 build $b/keccakf_stub.o: c $p/keccak/keccakf.c
 build $b/keccakf.o: c_optim $keccakimpl
 build $b/libkeccak.$so: dylib $
   $b/keccakf.o $b/keccakf_stub.o $
   $b/sponge.o $
-  $b/sha3_224.o $b/sha3_256.o $b/sha3_384.o $b/sha3_512.o $
-  $b/shake128.o $b/shake256.o $
+  $b/sha3.o $b/shake.o $
   $b/libutil.dylib
 
 # The utility library
@@ -46,5 +47,5 @@ s = libutil
 subninja libutil/build.ninja
 
 # The test cases
-include ninjas/buildlines.ninja
-include ninjas/tools/ccomp.ninja
+#include ninjas/buildlines.ninja
+#include ninjas/tools/ccomp.ninja

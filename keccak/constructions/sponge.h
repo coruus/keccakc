@@ -15,9 +15,9 @@
  */
 typedef struct sponge {
   uint64_t a[25];
-  // We reserve 7 bytes to be filled with random padding
-  // (and, by chance, this preserves thirty-bit alignment).
-  uint64_t padding[7];
+  // We reserve 3 bytes to be filled with random padding
+  // (and, by chance, this preserves 32-byte alignment).
+  uint64_t padding[3];
 
   uint64_t absorbed;
   uint64_t squeezed;

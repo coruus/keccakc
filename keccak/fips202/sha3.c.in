@@ -1,6 +1,8 @@
+#define KECCAK_PRIVATE_API
+#include "keccak.h"
+
 #include "keccak/constructions/sponge.h"
 #include "keccak/fips202/flags.h"
-#include "keccak/fips202/sha3.h"
 #include "keccak/modes/hash/hash-impl.h"
 #include "keccak/rte/check-impl.h"
 #include "libutil/libutil.h"
@@ -8,22 +10,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define HANDLE_ERR    \
-  do {                \
-    if (err == 0) {   \
-      break;          \
-    } else {          \
-      SOFT_RTE(sha3); \
-    }                 \
-  } while (0)
+/*py:
+sha3_s = [224, 256, 384, 512]
+sha3_sd = zip(sha3_s, [x//8 for x in sha3_s])
+*/
 
-#define checkoutlen                \
-  do {                             \
-    if (outlen != DIGEST_LENGTH) { \
-      SOFT_RTE(digestlen);         \
-    }                              \
-  } while (0)
-
+/*%for s, digest_length in sha3_sd*/
 /*@ behavior error:
       assumes sponge == \null;
       ensures \result == 0;
@@ -37,24 +29,24 @@
     complete behaviors;
     disjoint behaviors;
 */
-int SHA3FN_init(register keccak_sponge* const restrict sponge) {
+int sha3_`s`_init(register keccak_sponge* const restrict sponge) {
   checknull(sponge);
-  int err = _hash_init(sponge, 200 - (DIGEST_LENGTH * 2), flag_SHA3FN ^ hash_absorbing);
+  int err = _hash_init(sponge, 200 - (`digest_length` * 2), flag_sha3_`s` ^ hash_absorbing);
   //@ assert err == 0;
   HANDLE_ERR;
   return 0;
 }
 
-/*@ predicate SHA3FN_update_err(keccak_sponge* sponge, uint8_t* in) =
-      (sponge == \null) || (in == \null) || (sponge->flags != (flag_SHA3FN ^
+/*@ predicate sha3_`s`_update_err(keccak_sponge* sponge, uint8_t* in) =
+      (sponge == \null) || (in == \null) || (sponge->flags != (flag_sha3_`s` ^
    hash_absorbing));
 */
 /*@ behavior error:
-      assumes SHA3FN_update_err(sponge, in);
+      assumes sha3_`s`_update_err(sponge, in);
       ensures \result < 0;
       assigns \nothing;
     behavior success:
-      assumes !SHA3FN_update_err(sponge, in);
+      assumes !sha3_`s`_update_err(sponge, in);
       requires \valid(sponge) && \valid_read(in+(0..inlen-1));
       requires sponge->squeezed == 0;
       ensures \result == 0;
@@ -63,27 +55,27 @@ int SHA3FN_init(register keccak_sponge* const restrict sponge) {
     complete behaviors;
     disjoint behaviors;
 */
-int SHA3FN_update(register keccak_sponge* const restrict sponge,
+int sha3_`s`_update(register keccak_sponge* const restrict sponge,
                   register const uint8_t* const restrict in,
                   register const size_t inlen) {
   checknull(sponge);
   checknull(in);
-  int err = _hash_update(sponge, in, inlen, flag_SHA3FN ^ hash_absorbing);
+  int err = _hash_update(sponge, in, inlen, flag_sha3_`s` ^ hash_absorbing);
   //@assert err == 0;
   HANDLE_ERR;
   return 0;
 }
 
-/*@ predicate SHA3FN_digest_err(keccak_sponge* sponge, uint8_t* out, size_t outlen) =
-      (sponge == \null) || (out == \null) || (outlen != DIGEST_LENGTH)
-      || sponge->squeezed != 0 || sponge->flags != (flag_SHA3FN ^ hash_absorbing);
+/*@ predicate sha3_`s`_digest_err(keccak_sponge* sponge, uint8_t* out, size_t outlen) =
+      (sponge == \null) || (out == \null) || (outlen != `digest_length`)
+      || sponge->squeezed != 0 || sponge->flags != (flag_sha3_`s` ^ hash_absorbing);
 */
 /*@ behavior error:
-      assumes SHA3FN_digest_err(sponge, out, outlen);
+      assumes sha3_`s`_digest_err(sponge, out, outlen);
       ensures \result == 0;
       assigns \nothing;
     behavior success:
-      assumes !SHA3FN_digest_err(sponge, out, outlen);
+      assumes !sha3_`s`_digest_err(sponge, out, outlen);
       requires \valid(out+(0..outlen-1));
       ensures \result == 0;
       assigns sponge->a[0..24], sponge->squeezed, sponge->absorbed;
@@ -91,22 +83,24 @@ int SHA3FN_update(register keccak_sponge* const restrict sponge,
    complete behaviors;
    disjoint behaviors;
 */
-int SHA3FN_digest(register keccak_sponge* const restrict sponge,
+int sha3_`s`_digest(register keccak_sponge* const restrict sponge,
                   register uint8_t* const restrict out,
                   register const size_t outlen) {
-  checkoutlen;
+  if (outlen != `digest_length`) {
+    SOFT_RTE(digestlen);
+  }
   checknull(sponge);
   checknull(out);
 
   int err = _hash_finalize(
-      sponge, pad_sha, flag_SHA3FN ^ hash_absorbing, flag_SHA3FN ^ hash_squeezing);
+      sponge, pad_sha, flag_sha3_`s` ^ hash_absorbing, flag_sha3_`s` ^ hash_squeezing);
   //@ assert err == 0;
   HANDLE_ERR;
   // Clear the high bytes of the state -- which can never be output for the
   // FOFs -- before copying output (this ensures that, if used as a PMAC,
   // the key can't be recovered even if we abort due to error writing output).
   memclear((uint8_t*)sponge->a + 64, 200 - 64);
-  err = _hash_squeeze(sponge, out, DIGEST_LENGTH, flag_SHA3FN ^ hash_squeezing);
+  err = _hash_squeeze(sponge, out, `digest_length`, flag_sha3_`s` ^ hash_squeezing);
   //@ assert err == 0;
   // Then scribble the rest of the state.
   state_scribble(sponge);
@@ -114,40 +108,42 @@ int SHA3FN_digest(register keccak_sponge* const restrict sponge,
   return 0;
 }
 
-/*@ predicate SHA3FN_sc_err(uint8_t* out, size_t outlen, uint8_t* in, size_t inlen) =
-      (in == \null) || (out == \null) || (outlen != DIGEST_LENGTH);
+/*@ predicate sha3_`s`_sc_err(uint8_t* out, size_t outlen, uint8_t* in, size_t inlen) =
+      (in == \null) || (out == \null) || (outlen != `digest_length`);
 */
 /*@ behavior error:
-      assumes SHA3FN_sc_err(out, outlen, in, inlen);
+      assumes sha3_`s`_sc_err(out, outlen, in, inlen);
       ensures \result < 0;
       assigns \nothing;
     behavior success:
-      assumes !SHA3FN_sc_err(out, outlen, in, inlen);
+      assumes !sha3_`s`_sc_err(out, outlen, in, inlen);
       requires \valid(out+(0..outlen-1)) && \valid(in+(0..inlen-1));
       ensures \result == 0;
       assigns out[0..outlen-1];
     complete behaviors;
     disjoint behaviors;
 */
-int SHA3FN(register uint8_t* const restrict out,
+int sha3_`s`(register uint8_t* const restrict out,
            register const size_t outlen,
            register const uint8_t* const restrict in,
            register const size_t inlen) {
   checknull(out);
   checknull(in);
-  checkoutlen;
+  if (outlen != `digest_length`) {
+    SOFT_RTE(digestlen);
+  }
 
   keccak_sponge sponge;
   int err = 0;
-  err = SHA3FN_init(&sponge);  //@ assert(err == 0);
+  err = sha3_`s`_init(&sponge);  //@ assert(err == 0);
   HANDLE_ERR;
-  err = SHA3FN_update(&sponge, in, inlen);  //@ assert(err == 0);
+  err = sha3_`s`_update(&sponge, in, inlen);  //@ assert(err == 0);
   HANDLE_ERR;
-  err = SHA3FN_digest(&sponge, out, outlen);  //@ assert(err == 0);
+  err = sha3_`s`_digest(&sponge, out, outlen);  //@ assert(err == 0);
   HANDLE_ERR;
   memclear(&sponge, sizeof(sponge));
   return err;
 }
 
-#undef HANDLE_ERR
-#undef checkoutlen
+
+/*%endfor*/

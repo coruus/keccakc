@@ -24,10 +24,11 @@ static inline int checktest(const char* const restrict description,
   }
 }
 
-static inline void printkat(const uint8_t* const restrict msg,
-                            const size_t msgbytelen,
-                            const uint8_t* const restrict md,
-                            const size_t mdlen) {
+static inline void _printkat(const uint8_t* const restrict msg,
+                             const size_t msgbytelen,
+                             const uint8_t* const restrict md,
+                             const size_t mdlen,
+                             const char* mdname) {
   printf("Len = %zu\n", msgbytelen * 8);
   printf("Msg = ");
   if (msgbytelen != 0) {
@@ -39,11 +40,14 @@ static inline void printkat(const uint8_t* const restrict msg,
     printf("00");
   }
   printf("\n");
-  printf("MD = ");
+  printf("%s = ", mdname);
   for (size_t i = 0; i < mdlen; i++) {
     printf("%02X", md[i]);
   }
   printf("\n");
 }
+
+#define printkat(msg, msgbytelen, md, mdlen) _printkat((msg), (msgbytelen), (md), (mdlen), "MD")
+#define printkatshake(msg, msgbytelen, md, mdlen) _printkat((msg), (msgbytelen), (md), (mdlen), "Squeezed")
 
 #endif

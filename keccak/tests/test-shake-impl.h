@@ -26,7 +26,7 @@
         fprintf(stderr, "FAIL!!!!!");            \
       }                                          \
                                                  \
-      printkat(inpos, len, out, BYTES);          \
+      printkatshake(inpos, len, out, BYTES);     \
       inpos += len;                              \
     }                                            \
     return 0;                                    \
