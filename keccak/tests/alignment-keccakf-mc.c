@@ -23,7 +23,7 @@
  *
  * [^isa_note]: On Intel ISAs, this isn't true if the permutation uses
  * aligned loads or stores. (See the Intel reference for details.) The
- * permutation's machine-code must be verified (and possibly translated
+ * permutation's machine-code must be verified (and possibly translated)
  * if a memory protection fault must not be triggered.
  */
 #include "keccak/utils/print-impl.h"

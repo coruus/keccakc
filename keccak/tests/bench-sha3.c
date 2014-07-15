@@ -1,8 +1,7 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include "keccak/constructions/sponge.h"
-#include "keccak/fips202/sha3.h"
+#include "keccak.h"
 #include "keccak/tests/helpers-impl.h"
 #include "keccak/tests/test-kats-input.h"
 #include "libutil/tsc.h"
