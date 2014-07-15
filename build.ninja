@@ -28,7 +28,8 @@ build keccak.h: ginger keccak.h.in
 build $b/libkeccak_sponge.c: cat_always_inline $keccakimpl $
   $p/constructions/sponge.c $
   $p/keccak/keccakf.c $
-  $f/sha3.c $f/shake.c
+  $f/sha3.c $f/shake.c $
+  $t/test0-shake.c
 
 cflags = $cflags_optim
 build $b/sponge.o: c keccak/constructions/sponge.c
@@ -41,6 +42,18 @@ build $b/libkeccak.$so: dylib $
   $b/sponge.o $
   $b/sha3.o $b/shake.o $
   $b/libutil.dylib
+
+lkc = $b/libkeccak.$so
+build $b/alignment-mc: cexec $t/alignment-keccakf-mc.c $lkc
+build $b/test-kats: cexec $t/test-kats.c $lkc
+
+rule testkats
+  command = $b/test-kats > $out
+rule diffkats
+  command = diff $in $t/keccak_kats/kats_combined.txt > $out
+
+build $b/kats.txt: testkats
+#build $b/kats-diff.txt: diffkats $b/kats.txt
 
 # The utility library
 s = libutil
