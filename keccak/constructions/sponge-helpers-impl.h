@@ -61,8 +61,7 @@ static INLINE int _sponge_init(register keccak_sponge* const restrict sponge,
   // for (size_t i = 0; i < 7; i++) {
   //  sponge->padding[i] = sponge_padding[i];
   //}
-  // memset(sponge->a, 0, 25 * 8);
-  // memcpy(sponge->padding, sponge_padding, 7 * 8);
+  memset_s(sponge->a, 200, 0, 25 * 8);
 
   return 0;
 }
@@ -131,7 +130,7 @@ okay:
 
 #define checkinv(SPONGE)                \
   do {                                  \
-    int err = _sponge_checkinv(SPONGE); \
+    err = _sponge_checkinv(SPONGE);     \
     if (err != 0) {                     \
       SOFT_RTE(sponge_invariant);       \
     }                                   \

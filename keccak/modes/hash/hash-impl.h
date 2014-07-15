@@ -16,6 +16,7 @@ static INLINE int _hash_init(register keccak_sponge* const restrict sponge,
                              register const uint64_t flags) {
   int err = _sponge_init(sponge, rate);
   if (err != 0) {
+    // It's not possible to safely proceed in this case.
     return err;
   }
   sponge->flags = flags;
@@ -26,10 +27,12 @@ static INLINE int _hash_update(register keccak_sponge* const restrict sponge,
                                register const uint8_t* const restrict in,
                                register const size_t inlen,
                                register const uint64_t flags) {
+  int err = 0;
   if (sponge->flags != flags) {
     SOFT_RTE(hash_flags);
   }
-  return keccak_sponge_absorb(sponge, in, inlen);
+  err |= keccak_sponge_absorb(sponge, in, inlen);
+  return err;
 }
 
 static INLINE int _hash_finalize(register keccak_sponge* const restrict sponge,
@@ -59,7 +62,7 @@ static INLINE int _hash_finalize(register keccak_sponge* const restrict sponge,
   // And take the sponge out of the absorbing state.
   sponge->absorbed = 0;
   sponge->flags = newflags;
-  return 0;
+  return err;
 }
 
 static INLINE int _hash_squeeze(register keccak_sponge* const restrict sponge,
@@ -74,6 +77,7 @@ static INLINE int _hash_squeeze(register keccak_sponge* const restrict sponge,
   } else if (sponge->flags != flags) {
     SOFT_RTE(hash_flags);
   }
-  return keccak_sponge_squeeze(sponge, out, outlen);
+  err |= keccak_sponge_squeeze(sponge, out, outlen);
+  return err;
 }
 #endif  // KECCAK_MODES_HASH_IMPL_H
