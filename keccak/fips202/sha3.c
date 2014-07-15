@@ -29,7 +29,7 @@ int sha3_224_init(register keccak_sponge* const restrict sponge) {
   int err = _hash_init(sponge, 200 - (28 * 2), flag_sha3_224 ^ hash_absorbing);
   //@ assert err == 0;
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_224_update_err(keccak_sponge* sponge, uint8_t* in) =
@@ -58,7 +58,7 @@ int sha3_224_update(register keccak_sponge* const restrict sponge,
   int err = _hash_update(sponge, in, inlen, flag_sha3_224 ^ hash_absorbing);
   //@assert err == 0;
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_224_digest_err(keccak_sponge* sponge, uint8_t* out, size_t outlen) =
@@ -81,13 +81,14 @@ int sha3_224_update(register keccak_sponge* const restrict sponge,
 int sha3_224_digest(register keccak_sponge* const restrict sponge,
                   register uint8_t* const restrict out,
                   register const size_t outlen) {
+  int err = 0;
   if (outlen != 28) {
     SOFT_RTE(digestlen);
   }
   checknull(sponge);
   checknull(out);
 
-  int err = _hash_finalize(
+  err |= _hash_finalize(
       sponge, pad_sha, flag_sha3_224 ^ hash_absorbing, flag_sha3_224 ^ hash_squeezing);
   //@ assert err == 0;
   HANDLE_ERR;
@@ -95,12 +96,12 @@ int sha3_224_digest(register keccak_sponge* const restrict sponge,
   // FOFs -- before copying output (this ensures that, if used as a PMAC,
   // the key can't be recovered even if we abort due to error writing output).
   memclear((uint8_t*)sponge->a + 64, 200 - 64);
-  err = _hash_squeeze(sponge, out, 28, flag_sha3_224 ^ hash_squeezing);
+  err |= _hash_squeeze(sponge, out, 28, flag_sha3_224 ^ hash_squeezing);
   //@ assert err == 0;
   // Then scribble the rest of the state.
   state_scribble(sponge);
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_224_sc_err(uint8_t* out, size_t outlen, uint8_t* in, size_t inlen) =
@@ -122,6 +123,7 @@ int sha3_224(register uint8_t* const restrict out,
            register const size_t outlen,
            register const uint8_t* const restrict in,
            register const size_t inlen) {
+  int err = 0;
   checknull(out);
   checknull(in);
   if (outlen != 28) {
@@ -129,14 +131,13 @@ int sha3_224(register uint8_t* const restrict out,
   }
 
   keccak_sponge sponge;
-  int err = 0;
   err = sha3_224_init(&sponge);  //@ assert(err == 0);
   HANDLE_ERR;
   err = sha3_224_update(&sponge, in, inlen);  //@ assert(err == 0);
   HANDLE_ERR;
   err = sha3_224_digest(&sponge, out, outlen);  //@ assert(err == 0);
   HANDLE_ERR;
-  memclear(&sponge, sizeof(sponge));
+  state_scribble(&sponge);
   return err;
 }
 
@@ -159,7 +160,7 @@ int sha3_256_init(register keccak_sponge* const restrict sponge) {
   int err = _hash_init(sponge, 200 - (32 * 2), flag_sha3_256 ^ hash_absorbing);
   //@ assert err == 0;
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_256_update_err(keccak_sponge* sponge, uint8_t* in) =
@@ -188,7 +189,7 @@ int sha3_256_update(register keccak_sponge* const restrict sponge,
   int err = _hash_update(sponge, in, inlen, flag_sha3_256 ^ hash_absorbing);
   //@assert err == 0;
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_256_digest_err(keccak_sponge* sponge, uint8_t* out, size_t outlen) =
@@ -211,13 +212,14 @@ int sha3_256_update(register keccak_sponge* const restrict sponge,
 int sha3_256_digest(register keccak_sponge* const restrict sponge,
                   register uint8_t* const restrict out,
                   register const size_t outlen) {
+  int err = 0;
   if (outlen != 32) {
     SOFT_RTE(digestlen);
   }
   checknull(sponge);
   checknull(out);
 
-  int err = _hash_finalize(
+  err |= _hash_finalize(
       sponge, pad_sha, flag_sha3_256 ^ hash_absorbing, flag_sha3_256 ^ hash_squeezing);
   //@ assert err == 0;
   HANDLE_ERR;
@@ -225,12 +227,12 @@ int sha3_256_digest(register keccak_sponge* const restrict sponge,
   // FOFs -- before copying output (this ensures that, if used as a PMAC,
   // the key can't be recovered even if we abort due to error writing output).
   memclear((uint8_t*)sponge->a + 64, 200 - 64);
-  err = _hash_squeeze(sponge, out, 32, flag_sha3_256 ^ hash_squeezing);
+  err |= _hash_squeeze(sponge, out, 32, flag_sha3_256 ^ hash_squeezing);
   //@ assert err == 0;
   // Then scribble the rest of the state.
   state_scribble(sponge);
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_256_sc_err(uint8_t* out, size_t outlen, uint8_t* in, size_t inlen) =
@@ -252,6 +254,7 @@ int sha3_256(register uint8_t* const restrict out,
            register const size_t outlen,
            register const uint8_t* const restrict in,
            register const size_t inlen) {
+  int err = 0;
   checknull(out);
   checknull(in);
   if (outlen != 32) {
@@ -259,14 +262,13 @@ int sha3_256(register uint8_t* const restrict out,
   }
 
   keccak_sponge sponge;
-  int err = 0;
   err = sha3_256_init(&sponge);  //@ assert(err == 0);
   HANDLE_ERR;
   err = sha3_256_update(&sponge, in, inlen);  //@ assert(err == 0);
   HANDLE_ERR;
   err = sha3_256_digest(&sponge, out, outlen);  //@ assert(err == 0);
   HANDLE_ERR;
-  memclear(&sponge, sizeof(sponge));
+  state_scribble(&sponge);
   return err;
 }
 
@@ -289,7 +291,7 @@ int sha3_384_init(register keccak_sponge* const restrict sponge) {
   int err = _hash_init(sponge, 200 - (48 * 2), flag_sha3_384 ^ hash_absorbing);
   //@ assert err == 0;
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_384_update_err(keccak_sponge* sponge, uint8_t* in) =
@@ -318,7 +320,7 @@ int sha3_384_update(register keccak_sponge* const restrict sponge,
   int err = _hash_update(sponge, in, inlen, flag_sha3_384 ^ hash_absorbing);
   //@assert err == 0;
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_384_digest_err(keccak_sponge* sponge, uint8_t* out, size_t outlen) =
@@ -341,13 +343,14 @@ int sha3_384_update(register keccak_sponge* const restrict sponge,
 int sha3_384_digest(register keccak_sponge* const restrict sponge,
                   register uint8_t* const restrict out,
                   register const size_t outlen) {
+  int err = 0;
   if (outlen != 48) {
     SOFT_RTE(digestlen);
   }
   checknull(sponge);
   checknull(out);
 
-  int err = _hash_finalize(
+  err |= _hash_finalize(
       sponge, pad_sha, flag_sha3_384 ^ hash_absorbing, flag_sha3_384 ^ hash_squeezing);
   //@ assert err == 0;
   HANDLE_ERR;
@@ -355,12 +358,12 @@ int sha3_384_digest(register keccak_sponge* const restrict sponge,
   // FOFs -- before copying output (this ensures that, if used as a PMAC,
   // the key can't be recovered even if we abort due to error writing output).
   memclear((uint8_t*)sponge->a + 64, 200 - 64);
-  err = _hash_squeeze(sponge, out, 48, flag_sha3_384 ^ hash_squeezing);
+  err |= _hash_squeeze(sponge, out, 48, flag_sha3_384 ^ hash_squeezing);
   //@ assert err == 0;
   // Then scribble the rest of the state.
   state_scribble(sponge);
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_384_sc_err(uint8_t* out, size_t outlen, uint8_t* in, size_t inlen) =
@@ -382,6 +385,7 @@ int sha3_384(register uint8_t* const restrict out,
            register const size_t outlen,
            register const uint8_t* const restrict in,
            register const size_t inlen) {
+  int err = 0;
   checknull(out);
   checknull(in);
   if (outlen != 48) {
@@ -389,14 +393,13 @@ int sha3_384(register uint8_t* const restrict out,
   }
 
   keccak_sponge sponge;
-  int err = 0;
   err = sha3_384_init(&sponge);  //@ assert(err == 0);
   HANDLE_ERR;
   err = sha3_384_update(&sponge, in, inlen);  //@ assert(err == 0);
   HANDLE_ERR;
   err = sha3_384_digest(&sponge, out, outlen);  //@ assert(err == 0);
   HANDLE_ERR;
-  memclear(&sponge, sizeof(sponge));
+  state_scribble(&sponge);
   return err;
 }
 
@@ -419,7 +422,7 @@ int sha3_512_init(register keccak_sponge* const restrict sponge) {
   int err = _hash_init(sponge, 200 - (64 * 2), flag_sha3_512 ^ hash_absorbing);
   //@ assert err == 0;
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_512_update_err(keccak_sponge* sponge, uint8_t* in) =
@@ -448,7 +451,7 @@ int sha3_512_update(register keccak_sponge* const restrict sponge,
   int err = _hash_update(sponge, in, inlen, flag_sha3_512 ^ hash_absorbing);
   //@assert err == 0;
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_512_digest_err(keccak_sponge* sponge, uint8_t* out, size_t outlen) =
@@ -471,13 +474,14 @@ int sha3_512_update(register keccak_sponge* const restrict sponge,
 int sha3_512_digest(register keccak_sponge* const restrict sponge,
                   register uint8_t* const restrict out,
                   register const size_t outlen) {
+  int err = 0;
   if (outlen != 64) {
     SOFT_RTE(digestlen);
   }
   checknull(sponge);
   checknull(out);
 
-  int err = _hash_finalize(
+  err |= _hash_finalize(
       sponge, pad_sha, flag_sha3_512 ^ hash_absorbing, flag_sha3_512 ^ hash_squeezing);
   //@ assert err == 0;
   HANDLE_ERR;
@@ -485,12 +489,12 @@ int sha3_512_digest(register keccak_sponge* const restrict sponge,
   // FOFs -- before copying output (this ensures that, if used as a PMAC,
   // the key can't be recovered even if we abort due to error writing output).
   memclear((uint8_t*)sponge->a + 64, 200 - 64);
-  err = _hash_squeeze(sponge, out, 64, flag_sha3_512 ^ hash_squeezing);
+  err |= _hash_squeeze(sponge, out, 64, flag_sha3_512 ^ hash_squeezing);
   //@ assert err == 0;
   // Then scribble the rest of the state.
   state_scribble(sponge);
   HANDLE_ERR;
-  return 0;
+  return err;
 }
 
 /*@ predicate sha3_512_sc_err(uint8_t* out, size_t outlen, uint8_t* in, size_t inlen) =
@@ -512,6 +516,7 @@ int sha3_512(register uint8_t* const restrict out,
            register const size_t outlen,
            register const uint8_t* const restrict in,
            register const size_t inlen) {
+  int err = 0;
   checknull(out);
   checknull(in);
   if (outlen != 64) {
@@ -519,14 +524,13 @@ int sha3_512(register uint8_t* const restrict out,
   }
 
   keccak_sponge sponge;
-  int err = 0;
   err = sha3_512_init(&sponge);  //@ assert(err == 0);
   HANDLE_ERR;
   err = sha3_512_update(&sponge, in, inlen);  //@ assert(err == 0);
   HANDLE_ERR;
   err = sha3_512_digest(&sponge, out, outlen);  //@ assert(err == 0);
   HANDLE_ERR;
-  memclear(&sponge, sizeof(sponge));
+  state_scribble(&sponge);
   return err;
 }
 

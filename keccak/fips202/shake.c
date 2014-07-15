@@ -24,15 +24,12 @@ int shake128_digest(register keccak_sponge* const restrict sponge,
                    register const size_t outlen) {
   int err = 0;
   if (sponge->flags == (flag_shake128 ^ hash_absorbing)) {
-    err = _hash_finalize(
+    err |= _hash_finalize(
         sponge, pad_shake, flag_shake128 ^ hash_absorbing, flag_shake128 ^ hash_squeezing);
-    if (err != 0) {
-      return err;
-    }
-  } else if (sponge->flags == (flag_shake128 ^ hash_squeezing)) {
-    return -1;
+  } else if (sponge->flags != (flag_shake128 ^ hash_squeezing)) {
+    err |= -1;
   }
-  err = _hash_squeeze(sponge, out, outlen, flag_shake128 ^ hash_squeezing);
+  err |= _hash_squeeze(sponge, out, outlen, flag_shake128 ^ hash_squeezing);
 
   return err;
 }
@@ -56,7 +53,7 @@ int shake128(register uint8_t* const restrict out,
   //@ assert(err == 0);
   err = shake128_digest(&sponge, out, outlen);
   //@ assert(err == 0);
-  memclear(&sponge, sizeof(sponge));
+  state_scribble(&sponge);
   return err;
 }
 
@@ -75,15 +72,12 @@ int shake256_digest(register keccak_sponge* const restrict sponge,
                    register const size_t outlen) {
   int err = 0;
   if (sponge->flags == (flag_shake256 ^ hash_absorbing)) {
-    err = _hash_finalize(
+    err |= _hash_finalize(
         sponge, pad_shake, flag_shake256 ^ hash_absorbing, flag_shake256 ^ hash_squeezing);
-    if (err != 0) {
-      return err;
-    }
-  } else if (sponge->flags == (flag_shake256 ^ hash_squeezing)) {
-    return -1;
+  } else if (sponge->flags != (flag_shake256 ^ hash_squeezing)) {
+    err |= -1;
   }
-  err = _hash_squeeze(sponge, out, outlen, flag_shake256 ^ hash_squeezing);
+  err |= _hash_squeeze(sponge, out, outlen, flag_shake256 ^ hash_squeezing);
 
   return err;
 }
@@ -107,7 +101,7 @@ int shake256(register uint8_t* const restrict out,
   //@ assert(err == 0);
   err = shake256_digest(&sponge, out, outlen);
   //@ assert(err == 0);
-  memclear(&sponge, sizeof(sponge));
+  state_scribble(&sponge);
   return err;
 }
 
