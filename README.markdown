@@ -11,6 +11,18 @@ code.
 This is an alpha release; it has only been (very partially)
 verified.
 
+To build using CMake and ninja:
+
+    cd build
+    cmake -GNinja ..
+    ninja
+
+To build using CMake and make:
+
+    cd build
+    cmake ..
+    make
+
 ## Howto
 
     #include "keccak.h"
