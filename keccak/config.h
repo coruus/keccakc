@@ -7,4 +7,5 @@
 #define INLINE inline
 #define KINLINE
 #endif  // !defined(__COMPCERT__) && !defined(__FRAMAC__)
+#define NO_LIBUTIL
 #endif  // KECCAK_CONFIG_H
