@@ -41,24 +41,29 @@ int sha3_224(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);
-KECCAK_EXPORT int sha3_256(register uint8_t* const restrict out,
+KECCAK_EXPORT
+int sha3_256(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);
-KECCAK_EXPORT int sha3_384(register uint8_t* const restrict out,
+KECCAK_EXPORT
+int sha3_384(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);
-KECCAK_EXPORT int sha3_512(register uint8_t* const restrict out,
+KECCAK_EXPORT
+int sha3_512(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);
 
-KECCAK_EXPORT int shake128(register uint8_t* const restrict out,
+KECCAK_EXPORT
+int shake128(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);
-KECCAK_EXPORT int shake256(register uint8_t* const restrict out,
+KECCAK_EXPORT
+int shake256(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);
