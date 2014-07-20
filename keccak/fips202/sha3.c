@@ -25,8 +25,9 @@
     disjoint behaviors;
 */
 int sha3_224_init(register keccak_sponge* const restrict sponge) {
+  int err;
   checknull(sponge);
-  int err = _hash_init(sponge, 200 - (28 * 2), flag_sha3_224 ^ hash_absorbing);
+  err = _hash_init(sponge, 200 - (28 * 2), flag_sha3_224 ^ hash_absorbing);
   //@ assert err == 0;
   HANDLE_ERR;
   return err;
@@ -53,9 +54,10 @@ int sha3_224_init(register keccak_sponge* const restrict sponge) {
 int sha3_224_update(register keccak_sponge* const restrict sponge,
                   register const uint8_t* const restrict in,
                   register const size_t inlen) {
+  int err;
   checknull(sponge);
   checknull(in);
-  int err = _hash_update(sponge, in, inlen, flag_sha3_224 ^ hash_absorbing);
+  err = _hash_update(sponge, in, inlen, flag_sha3_224 ^ hash_absorbing);
   //@assert err == 0;
   HANDLE_ERR;
   return err;
@@ -130,15 +132,17 @@ int sha3_224(register uint8_t* const restrict out,
     SOFT_RTE(digestlen);
   }
 
-  keccak_sponge sponge;
-  err = sha3_224_init(&sponge);  //@ assert(err == 0);
-  HANDLE_ERR;
-  err = sha3_224_update(&sponge, in, inlen);  //@ assert(err == 0);
-  HANDLE_ERR;
-  err = sha3_224_digest(&sponge, out, outlen);  //@ assert(err == 0);
-  HANDLE_ERR;
-  state_scribble(&sponge);
-  return err;
+  {
+    keccak_sponge sponge;
+    err = sha3_224_init(&sponge);  //@ assert(err == 0);
+    HANDLE_ERR;
+    err = sha3_224_update(&sponge, in, inlen);  //@ assert(err == 0);
+    HANDLE_ERR;
+    err = sha3_224_digest(&sponge, out, outlen);  //@ assert(err == 0);
+    HANDLE_ERR;
+    state_scribble(&sponge);
+    return err;
+  }
 }
 
 
@@ -156,8 +160,9 @@ int sha3_224(register uint8_t* const restrict out,
     disjoint behaviors;
 */
 int sha3_256_init(register keccak_sponge* const restrict sponge) {
+  int err;
   checknull(sponge);
-  int err = _hash_init(sponge, 200 - (32 * 2), flag_sha3_256 ^ hash_absorbing);
+  err = _hash_init(sponge, 200 - (32 * 2), flag_sha3_256 ^ hash_absorbing);
   //@ assert err == 0;
   HANDLE_ERR;
   return err;
@@ -184,9 +189,10 @@ int sha3_256_init(register keccak_sponge* const restrict sponge) {
 int sha3_256_update(register keccak_sponge* const restrict sponge,
                   register const uint8_t* const restrict in,
                   register const size_t inlen) {
+  int err;
   checknull(sponge);
   checknull(in);
-  int err = _hash_update(sponge, in, inlen, flag_sha3_256 ^ hash_absorbing);
+  err = _hash_update(sponge, in, inlen, flag_sha3_256 ^ hash_absorbing);
   //@assert err == 0;
   HANDLE_ERR;
   return err;
@@ -261,14 +267,17 @@ int sha3_256(register uint8_t* const restrict out,
     SOFT_RTE(digestlen);
   }
 
-  keccak_sponge sponge;
-  err = sha3_256_init(&sponge);  //@ assert(err == 0);
-  HANDLE_ERR;
-  err = sha3_256_update(&sponge, in, inlen);  //@ assert(err == 0);
-  HANDLE_ERR;
-  err = sha3_256_digest(&sponge, out, outlen);  //@ assert(err == 0);
-  HANDLE_ERR;
-  state_scribble(&sponge);
+  {
+    keccak_sponge sponge;
+    err = sha3_256_init(&sponge);  //@ assert(err == 0);
+    HANDLE_ERR;
+    err = sha3_256_update(&sponge, in, inlen);  //@ assert(err == 0);
+    HANDLE_ERR;
+    err = sha3_256_digest(&sponge, out, outlen);  //@ assert(err == 0);
+    HANDLE_ERR;
+    state_scribble(&sponge);
+  }
+
   return err;
 }
 
@@ -287,8 +296,9 @@ int sha3_256(register uint8_t* const restrict out,
     disjoint behaviors;
 */
 int sha3_384_init(register keccak_sponge* const restrict sponge) {
+  int err;
   checknull(sponge);
-  int err = _hash_init(sponge, 200 - (48 * 2), flag_sha3_384 ^ hash_absorbing);
+  err = _hash_init(sponge, 200 - (48 * 2), flag_sha3_384 ^ hash_absorbing);
   //@ assert err == 0;
   HANDLE_ERR;
   return err;
@@ -315,9 +325,10 @@ int sha3_384_init(register keccak_sponge* const restrict sponge) {
 int sha3_384_update(register keccak_sponge* const restrict sponge,
                   register const uint8_t* const restrict in,
                   register const size_t inlen) {
+  int err;
   checknull(sponge);
   checknull(in);
-  int err = _hash_update(sponge, in, inlen, flag_sha3_384 ^ hash_absorbing);
+  err = _hash_update(sponge, in, inlen, flag_sha3_384 ^ hash_absorbing);
   //@assert err == 0;
   HANDLE_ERR;
   return err;
@@ -392,14 +403,17 @@ int sha3_384(register uint8_t* const restrict out,
     SOFT_RTE(digestlen);
   }
 
-  keccak_sponge sponge;
-  err = sha3_384_init(&sponge);  //@ assert(err == 0);
-  HANDLE_ERR;
-  err = sha3_384_update(&sponge, in, inlen);  //@ assert(err == 0);
-  HANDLE_ERR;
-  err = sha3_384_digest(&sponge, out, outlen);  //@ assert(err == 0);
-  HANDLE_ERR;
-  state_scribble(&sponge);
+  {
+    keccak_sponge sponge;
+    err = sha3_384_init(&sponge);  //@ assert(err == 0);
+    HANDLE_ERR;
+    err = sha3_384_update(&sponge, in, inlen);  //@ assert(err == 0);
+    HANDLE_ERR;
+    err = sha3_384_digest(&sponge, out, outlen);  //@ assert(err == 0);
+    HANDLE_ERR;
+    state_scribble(&sponge);
+  }
+
   return err;
 }
 
@@ -418,8 +432,9 @@ int sha3_384(register uint8_t* const restrict out,
     disjoint behaviors;
 */
 int sha3_512_init(register keccak_sponge* const restrict sponge) {
+  int err;
   checknull(sponge);
-  int err = _hash_init(sponge, 200 - (64 * 2), flag_sha3_512 ^ hash_absorbing);
+  err = _hash_init(sponge, 200 - (64 * 2), flag_sha3_512 ^ hash_absorbing);
   //@ assert err == 0;
   HANDLE_ERR;
   return err;
@@ -446,9 +461,10 @@ int sha3_512_init(register keccak_sponge* const restrict sponge) {
 int sha3_512_update(register keccak_sponge* const restrict sponge,
                   register const uint8_t* const restrict in,
                   register const size_t inlen) {
+  int err;
   checknull(sponge);
   checknull(in);
-  int err = _hash_update(sponge, in, inlen, flag_sha3_512 ^ hash_absorbing);
+  err = _hash_update(sponge, in, inlen, flag_sha3_512 ^ hash_absorbing);
   //@assert err == 0;
   HANDLE_ERR;
   return err;
@@ -523,14 +539,17 @@ int sha3_512(register uint8_t* const restrict out,
     SOFT_RTE(digestlen);
   }
 
-  keccak_sponge sponge;
-  err = sha3_512_init(&sponge);  //@ assert(err == 0);
-  HANDLE_ERR;
-  err = sha3_512_update(&sponge, in, inlen);  //@ assert(err == 0);
-  HANDLE_ERR;
-  err = sha3_512_digest(&sponge, out, outlen);  //@ assert(err == 0);
-  HANDLE_ERR;
-  state_scribble(&sponge);
+  {
+    keccak_sponge sponge;
+    err = sha3_512_init(&sponge);  //@ assert(err == 0);
+    HANDLE_ERR;
+    err = sha3_512_update(&sponge, in, inlen);  //@ assert(err == 0);
+    HANDLE_ERR;
+    err = sha3_512_digest(&sponge, out, outlen);  //@ assert(err == 0);
+    HANDLE_ERR;
+    state_scribble(&sponge);
+  }
+
   return err;
 }
 

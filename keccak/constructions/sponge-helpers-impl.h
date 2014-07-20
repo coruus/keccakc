@@ -28,6 +28,8 @@
 */
 static INLINE int _sponge_init(register keccak_sponge* const restrict sponge,
                                register const size_t rate) {
+  size_t i;
+
   if (sponge == NULL) {
     return -2;
   }
@@ -53,7 +55,7 @@ static INLINE int _sponge_init(register keccak_sponge* const restrict sponge,
   sponge->flags = 0;
 
   //@ loop variant 24 - i;
-  for (size_t i = 0; i < 25; i++) {
+  for (i = 0; i < 25; i++) {
     //@ assert \valid(sponge->a + i);
     sponge->a[i] = 0;
   }

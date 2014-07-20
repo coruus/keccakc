@@ -3,9 +3,16 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <stdalign.h>
 #include <stdint.h>
+
+#ifndef _MSC_VER
+#include <stdalign.h>
 #include <stdbool.h>
+#else
+#ifndef restrict
+#define restrict __restrict
+#endif
+#endif
 
 /* The sponge structure. API users must treat it as an opaque blob.
  *

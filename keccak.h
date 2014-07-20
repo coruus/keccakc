@@ -5,9 +5,23 @@
  */
 
 #include <stdlib.h>
-#include <stdalign.h>
 #include <stdint.h>
+
+#ifndef _MSC_VER
+#include <stdalign.h>
 #include <stdbool.h>
+#else
+#define restrict __restrict
+#if defined(keccak_EXPORTS)
+#define KECCAK_EXPORT __declspec(dllexport)
+#else
+#define KECCAK_EXPORT __declspec(dllexport)
+#endif
+#endif
+
+#ifndef KECCAK_EXPORT
+#define KECCAK_EXPORT
+#endif
 
 /* An opaque definition of the sponge structure.
  *
@@ -22,28 +36,29 @@ typedef struct keccak_sponge { uint64_t _OPAQUE[32]; } keccak_sponge;
 /********************************************************************
  * Simple interface to FIPS-202-defined functions.
  */
+KECCAK_EXPORT 
 int sha3_224(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);
-int sha3_256(register uint8_t* const restrict out,
+KECCAK_EXPORT int sha3_256(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);
-int sha3_384(register uint8_t* const restrict out,
+KECCAK_EXPORT int sha3_384(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);
-int sha3_512(register uint8_t* const restrict out,
+KECCAK_EXPORT int sha3_512(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);
 
-int shake128(register uint8_t* const restrict out,
+KECCAK_EXPORT int shake128(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);
-int shake256(register uint8_t* const restrict out,
+KECCAK_EXPORT int shake256(register uint8_t* const restrict out,
              register const size_t outlen,
              register const uint8_t* const restrict in,
              register const size_t inlen);

@@ -11,9 +11,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_MSC_VER)
+#pragma warning(disable:4244)
+#endif
+
 static INLINE size_t _sponge_absorb_once(register keccak_sponge* const restrict sponge,
                                          register const uint8_t* const restrict in,
                                          register const size_t inlen) {
+  // conversion from 32 to 64 bits: generates warnings on MSC (4244)
   register size_t canabsorb = sponge->rate - sponge->absorbed;
   register uint8_t* state = ((uint8_t*)sponge->a) + sponge->absorbed;
 
