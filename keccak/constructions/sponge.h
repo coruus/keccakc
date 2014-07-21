@@ -14,6 +14,11 @@
 #endif
 #endif
 
+// EXPORT because when building libkeccak this file's declarations must match keccak.h (visual c++ complains otherwise)
+#ifndef KECCAK_EXPORT
+#define KECCAK_EXPORT
+#endif
+
 /* The sponge structure. API users must treat it as an opaque blob.
  *
  * TODO: This may be an excessivly redundant structure. Directly
@@ -59,7 +64,7 @@ typedef struct sponge {
 static const size_t sponge_bytelen = 200;
 #define sponge_bytelen 200
 // for CompCert and other C99 tools
-
+KECCAK_EXPORT
 int keccak_sponge_init(register keccak_sponge* const restrict sponge,
                        register const size_t rate);
 /*@ assigns \nothing;
@@ -79,12 +84,14 @@ int keccak_sponge_checkinv(register const keccak_sponge* const sponge);
 /*@ requires sponge_invariant(sponge);
     ensures sponge_invariant(sponge);
 */
+KECCAK_EXPORT
 int keccak_sponge_absorb(register keccak_sponge* const restrict sponge,
                          register const uint8_t* const restrict in,
                          register const size_t inlen);
 /*@ requires sponge_invariant(sponge);
     ensures sponge_invariant(sponge);
 */
+KECCAK_EXPORT
 int keccak_sponge_squeeze(register keccak_sponge* const restrict sponge,
                           register uint8_t* const restrict out,
                           register const size_t outlen);

@@ -11,9 +11,10 @@
 #define TEST(BITS, BYTES)                        \
   int test_shake##BITS(void);                    \
   int test_shake##BITS(void) {                   \
+    size_t len;                                  \
     keccak_sponge sponge;                        \
     const uint8_t* inpos = in;                   \
-    for (size_t len = 0; len < 256; len++) {     \
+    for (len = 0; len < 256; len++) {            \
       uint8_t out[BYTES] = {0};                  \
       uint8_t outs[BYTES] = {0};                 \
                                                  \

@@ -1,3 +1,6 @@
+option(KECCAK_BUILD_TESTS "Build libkeccak test programs" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries." OFF)
+
 if(CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_C_FLAGS "-std=c99")
 endif()
@@ -26,7 +29,11 @@ list(APPEND hdr
 	"utils/c11shim.h"
 	)
 
-set(libtype STATIC)
+if(BUILD_SHARED_LIBS)
+	set(libtype SHARED)
+else()
+	set(libtype STATIC)
+endif()
 
 add_library(libkeccak ${libtype} ${src} ${public_hdrs} ${hdr})
 
@@ -38,3 +45,15 @@ set_target_properties(libkeccak PROPERTIES
 #	VERSION 0.6.0
 	PREFIX ""
 	LIBFILENAME "libkeccak")
+
+### TESTS
+if (KECCAK_BUILD_TESTS)
+	add_executable(test0-sha3 "tests/test0-sha3.c")
+	target_link_libraries(test0-sha3 libkeccak)
+
+	add_executable(test0-shake "tests/test0-shake.c")
+	target_link_libraries(test0-shake libkeccak)
+
+	add_executable(test-kats "tests/test-kats.c")
+	target_link_libraries(test-kats libkeccak)
+endif()

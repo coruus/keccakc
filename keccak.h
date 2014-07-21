@@ -81,37 +81,49 @@ int shake256(register uint8_t* const restrict out,
  * output.)
  */
 // SHA3-224
+KECCAK_EXPORT
 int sha3_224_init(register keccak_sponge* const restrict sponge);
+KECCAK_EXPORT
 int sha3_224_update(register keccak_sponge* const restrict sponge,
                     register const uint8_t* const restrict in,
                     register const size_t inlen);
+KECCAK_EXPORT
 int sha3_224_digest(register keccak_sponge* const restrict sponge,
                     register uint8_t* const restrict out,
                     register const size_t outlen);
 
 // SHA3-256
+KECCAK_EXPORT
 int sha3_256_init(register keccak_sponge* const restrict sponge);
+KECCAK_EXPORT
 int sha3_256_update(register keccak_sponge* const restrict sponge,
                     register const uint8_t* const restrict in,
                     register const size_t inlen);
+KECCAK_EXPORT
 int sha3_256_digest(register keccak_sponge* const restrict sponge,
                     register uint8_t* const restrict out,
                     register const size_t outlen);
 
 // SHA3-384
+KECCAK_EXPORT
 int sha3_384_init(register keccak_sponge* const restrict sponge);
+KECCAK_EXPORT
 int sha3_384_update(register keccak_sponge* const restrict sponge,
                     register const uint8_t* const restrict in,
                     register const size_t inlen);
+KECCAK_EXPORT
 int sha3_384_digest(register keccak_sponge* const restrict sponge,
                     register uint8_t* const restrict out,
                     register const size_t outlen);
 
 // SHA3-512
+KECCAK_EXPORT
 int sha3_512_init(register keccak_sponge* const restrict sponge);
+KECCAK_EXPORT
 int sha3_512_update(register keccak_sponge* const restrict sponge,
                     register const uint8_t* const restrict in,
                     register const size_t inlen);
+KECCAK_EXPORT
 int sha3_512_digest(register keccak_sponge* const restrict sponge,
                     register uint8_t* const restrict out,
                     register const size_t outlen);
@@ -138,19 +150,25 @@ int sha3_512_digest(register keccak_sponge* const restrict sponge,
  */
 
 // SHAKE128
+KECCAK_EXPORT
 int shake128_init(register keccak_sponge* const restrict sponge);
+KECCAK_EXPORT
 int shake128_update(register keccak_sponge* const restrict sponge,
                     register const uint8_t* const restrict in,
                     register const size_t inlen);
+KECCAK_EXPORT
 int shake128_digest(register keccak_sponge* const restrict sponge,
                     register uint8_t* const restrict out,
                     register const size_t outlen);
 
 // SHAKE256
+KECCAK_EXPORT
 int shake256_init(register keccak_sponge* const restrict sponge);
+KECCAK_EXPORT
 int shake256_update(register keccak_sponge* const restrict sponge,
                     register const uint8_t* const restrict in,
                     register const size_t inlen);
+KECCAK_EXPORT
 int shake256_digest(register keccak_sponge* const restrict sponge,
                     register uint8_t* const restrict out,
                     register const size_t outlen);
@@ -170,11 +188,14 @@ int shake256_digest(register keccak_sponge* const restrict sponge,
  * from squeezing to absorbing; i.e., the permutation is never applied two
  * times in a row without either absorbing input or squeezing output.)
  */
+KECCAK_EXPORT
 int keccak_sponge_init(register keccak_sponge* const restrict sponge,
                        register const size_t rate);
+KECCAK_EXPORT
 int keccak_sponge_absorb(register keccak_sponge* const restrict sponge,
                          register const uint8_t* const restrict in,
                          register const size_t inlen);
+KECCAK_EXPORT
 int keccak_sponge_squeeze(register keccak_sponge* const restrict sponge,
                           register uint8_t* const restrict out,
                           register const size_t outlen);
@@ -186,4 +207,5 @@ int keccak_sponge_squeeze_xor(register keccak_sponge* const restrict sponge,
                               register uint8_t* const restrict out,
                               register const size_t outlen);
 */
+
 #endif  // KECCAK_H

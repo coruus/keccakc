@@ -6,7 +6,15 @@
 #include <stdint.h>
 #include <string.h>
 
-static inline int checktest(const char* const restrict description,
+#ifndef _MSC_VER
+#define INLINE inline
+#define SIZE_T_FORMAT "%zu"
+#else
+#define INLINE __inline
+#define SIZE_T_FORMAT "%Iu"
+#endif
+
+static INLINE int checktest(const char* const restrict description,
                             const uint8_t* const restrict known_answer,
                             const uint8_t* const restrict result,
                             const size_t bytelen) {
@@ -24,15 +32,16 @@ static inline int checktest(const char* const restrict description,
   }
 }
 
-static inline void _printkat(const uint8_t* const restrict msg,
+static INLINE void _printkat(const uint8_t* const restrict msg,
                              const size_t msgbytelen,
                              const uint8_t* const restrict md,
                              const size_t mdlen,
                              const char* mdname) {
-  printf("Len = %zu\n", msgbytelen * 8);
+  size_t i;
+  printf("Len = "SIZE_T_FORMAT"\n", msgbytelen * 8);
   printf("Msg = ");
   if (msgbytelen != 0) {
-    for (size_t i = 0; i < msgbytelen; i++) {
+    for (i = 0; i < msgbytelen; i++) {
       printf("%02X", msg[i]);
     }
   } else {
@@ -41,7 +50,7 @@ static inline void _printkat(const uint8_t* const restrict msg,
   }
   printf("\n");
   printf("%s = ", mdname);
-  for (size_t i = 0; i < mdlen; i++) {
+  for (i = 0; i < mdlen; i++) {
     printf("%02X", md[i]);
   }
   printf("\n");

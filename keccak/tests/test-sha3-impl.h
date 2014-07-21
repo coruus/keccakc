@@ -13,7 +13,8 @@
   int test_sha3_##BITS(void) {                   \
     keccak_sponge sponge;                        \
     const uint8_t* inpos = in;                   \
-    for (size_t len = 0; len < 256; len++) {     \
+    size_t len; \
+    for (len = 0; len < 256; len++) {            \
       uint8_t out[BYTES] = {0};                  \
       uint8_t outs[BYTES] = {0};                 \
                                                  \
