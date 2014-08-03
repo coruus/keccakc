@@ -2,64 +2,155 @@
 #include "keccak.h"
 
 #include "keccak/constructions/sponge.h"
+#include "keccak/constructions/sponge-ops.h"
+#include "keccak/constructions/sponge-impl.h"
 #include "keccak/fips202/flags.h"
-#include "keccak/modes/hash/hash-impl.h"
+#include "keccak/rte/check-impl.h"
+#include "keccak/rte/rte.h"
 #include "libutil/libutil.h"
 
 #include <stdint.h>
 #include <stdlib.h>
+
 /*py:
 shakes = [128, 256]
-shake_sb = zip(shakes, [x//8 for x in shakes])
+shake_sd = zip(shakes, [x//8 for x in shakes])
 */
 
-/*% for s, b in shake_sb */
+/*%for s, digest_length in shake_sd*/
+/*@ behavior error:
+      assumes sponge == \null;
+      ensures \result == 0;
+      assigns \nothing;
+    behavior success:
+      assumes sponge != \null;
+      requires \valid(sponge);
+      ensures \result == 0;
+      ensures sponge_invariant(sponge);
+      assigns sponge->a[0..24], sponge->flags, sponge->position, sponge->position;
+    complete behaviors;
+    disjoint behaviors;
+*/
 int shake`s`_init(register keccak_sponge* const restrict sponge) {
-  return _hash_init(sponge, 200 - (`b` * 2), flag_shake`s` ^ hash_absorbing);
+  checknull(sponge);
+  _sponge_init(sponge, 200 - (`digest_length` * 2));
+  sponge->flags = flag_shake`s` ^ hash_absorbing;
+  return 0;
 }
 
+/*@ predicate shake`s`_update_err(keccak_sponge* sponge, uint8_t* in) =
+      (sponge == \null) || (in == \null) || (sponge->flags != (flag_shake`s` ^
+   hash_absorbing));
+*/
+/*@ behavior error:
+      assumes shake`s`_update_err(sponge, in);
+      ensures \result < 0;
+      assigns \nothing;
+    behavior success:
+      assumes !shake`s`_update_err(sponge, in);
+      requires \valid(sponge) && \valid_read(in+(0..inlen-1));
+      requires sponge->position == 0;
+      ensures \result == 0;
+      ensures \old(sponge_invariant(sponge)) ==> sponge_invariant(sponge);
+      assigns sponge->a[0..24], sponge->position;
+    complete behaviors;
+    disjoint behaviors;
+*/
 int shake`s`_update(register keccak_sponge* const restrict sponge,
-                   register const uint8_t* const restrict in,
-                   register const size_t inlen) {
-  return _hash_update(sponge, in, inlen, flag_shake`s` ^ hash_absorbing);
-}
-
-int shake`s`_digest(register keccak_sponge* const restrict sponge,
-                   register uint8_t* const restrict out,
-                   register const size_t outlen) {
+                  register const uint8_t* const restrict in,
+                  register const size_t inlen) {
+  checknull(sponge);
+  checknull(in);
   int err = 0;
-  if (sponge->flags == (flag_shake`s` ^ hash_absorbing)) {
-    err |= _hash_finalize(
-        sponge, pad_shake, flag_shake`s` ^ hash_absorbing, flag_shake`s` ^ hash_squeezing);
-  } else if (sponge->flags != (flag_shake`s` ^ hash_squeezing)) {
-    err |= -1;
+  checkinv(sponge);
+  if (sponge->rate != (200 - (2 * `digest_length`))) {
+     SOFT_RTE(hash_rate);
+  } else if (sponge->flags != (flag_shake`s` ^ hash_absorbing)) {
+     SOFT_RTE(hash_flags);
   }
-  err |= _hash_squeeze(sponge, out, outlen, flag_shake`s` ^ hash_squeezing);
-
+  _sponge_absorb(sponge, in, inlen);
   return err;
 }
 
-/*@ requires \valid(out+(0..outlen-1));
-    requires \valid(in+(0..inlen-1));
-    requires inlen < RSIZE_MAX;
-    requires outlen < RSIZE_MAX;
-    assigns out+(0..outlen-1);
-    ensures \result == 0;
+/*@ predicate shake`s`_digest_err(keccak_sponge* sponge, uint8_t* out, size_t outlen) =
+      (sponge == \null) || (out == \null) || (outlen != `digest_length`)
+      || sponge->position != 0 || sponge->flags != (flag_shake`s` ^ hash_absorbing);
+*/
+/*@ behavior error:
+      assumes shake`s`_digest_err(sponge, out, outlen);
+      ensures \result == 0;
+      assigns \nothing;
+    behavior success:
+      assumes !shake`s`_digest_err(sponge, out, outlen);
+      requires \valid(out+(0..outlen-1));
+      ensures \result == 0;
+      assigns sponge->a[0..24], sponge->position, sponge->position;
+      //ensures \old(sponge_invariant(sponge)) ==> sponge_invariant(sponge);
+   complete behaviors;
+   disjoint behaviors;
+*/
+int shake`s`_digest(register keccak_sponge* const restrict sponge,
+                  register uint8_t* const restrict out,
+                  register const size_t outlen) {
+  int err = 0;
+  checknull(sponge);
+  checknull(out);
+
+  checkinv(sponge);
+  switch (sponge->flags) {
+    case (flag_shake`s` ^ hash_squeezing):
+      break; 
+    case (flag_shake`s` ^ hash_absorbing):
+      // If we're still absorbing, pad the message and apply Keccak-f.
+      _sponge_pad(sponge, pad_shake);
+      sponge->flags = flag_shake`s` ^ hash_squeezing;
+      break;
+  }
+  
+  _sponge_squeeze(sponge, out, outlen);
+  /*@ assert err == 0; */
+  
+  HANDLE_ERR;
+  return err;
+}
+
+/*@ predicate shake`s`_sc_err(uint8_t* out, size_t outlen, uint8_t* in, size_t inlen) =
+      (in == \null) || (out == \null) || (outlen != `digest_length`);
+*/
+/*@ behavior error:
+      assumes shake`s`_sc_err(out, outlen, in, inlen);
+      ensures \result < 0;
+      assigns \nothing;
+    behavior success:
+      assumes !shake`s`_sc_err(out, outlen, in, inlen);
+      requires \valid(out+(0..outlen-1)) && \valid(in+(0..inlen-1));
+      ensures \result == 0;
+      assigns out[0..outlen-1];
+    complete behaviors;
+    disjoint behaviors;
 */
 int shake`s`(register uint8_t* const restrict out,
-            register const size_t outlen,
-            register const uint8_t* const restrict in,
-            register const size_t inlen) {
-  keccak_sponge sponge;
+           register const size_t outlen,
+           register const uint8_t* const restrict in,
+           register const size_t inlen) {
   int err = 0;
-  err = shake`s`_init(&sponge);
-  //@ assert(err == 0);
+  checknull(out);
+  checknull(in);
+
+  keccak_sponge sponge;
+  err = shake`s`_init(&sponge); 
+  /* @ assert(err == 0); */
+  HANDLE_ERR;
   err = shake`s`_update(&sponge, in, inlen);
-  //@ assert(err == 0);
-  err = shake`s`_digest(&sponge, out, outlen);
-  //@ assert(err == 0);
+  /*@ assert(err == 0); */
+  HANDLE_ERR;
+  err = shake`s`_digest(&sponge, out, outlen); 
+  /*@ assert(err == 0); */
+  HANDLE_ERR;
   state_scribble(&sponge);
   return err;
 }
+
+
 
 /*% endfor */

@@ -13,5 +13,6 @@ include ninjas/tools/clang.ninja
 clocal = -I.
 cflags = $cflags $clocal
 #cflags_optim = $cflags
-cflags_optim = $cflags_optim $clocal
+#cflags_optim = $cflags_optim $clocal
+cflags_optim = $cflags
 so = dylib

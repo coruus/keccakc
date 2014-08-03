@@ -1,0 +1,78 @@
+#ifndef KECCAK_CONSTRUCTIONS_SPONGE_OPS_IMPL_H
+#define KECCAK_CONSTRUCTIONS_SPONGE_OPS_IMPL_H
+#include "keccak/config.h"
+#include "keccak/constructions/sponge-helpers-impl.h"
+#include "keccak/constructions/sponge.h"
+#include "keccak/keccak/keccak-1600.h"
+#include "keccak/rte/check-impl.h"
+#include "keccak/rte/rte.h"
+#include "keccak/utils/c11shim.h"
+#include "keccak/utils/xorinto-impl.h"
+
+/*yaml:
+SPONGEOPS:
+ - ['absorb', '_xorinto(state, in, dolen);', 'in']
+ - ['squeeze', 'memcpy(out, state, dolen);', 'out']
+ - ['squexor', '_xorinto(out, state, dolen);', 'out']
+ - ['absqueeze', '_xorinto(state, io, dolen); memcpy(io, state, dolen);', 'io']
+*/
+
+/*% for name, operation, way in SPONGEOPS */
+static inline size_t _sponge_`name`_once(register keccak_sponge* const restrict sponge,
+                                         register `"const " if way == "in" else ""`uint8_t* const restrict `way`,
+                                         register const size_t len) {
+  /*@ assert sponge->rate - sponge->position > 0; */
+  register size_t cando = sponge->rate - sponge->position;
+  register uint8_t* state = ((uint8_t*)sponge->a) + sponge->position;
+  /*@ assert \valid(state[0..cando-1]);           */
+  register size_t dolen;
+
+  if (cando > len) {
+    dolen = len;
+    `operation`
+    sponge->position += dolen;
+    /*@ assert sponge->position < sponge->rate; */
+    /*@ assert cando == len;                  */
+  } else {
+    /*@ assert cando <= len;                  */
+    dolen = cando;
+    /*@ assert cando == sponge->rate - sponge->position; */
+    `operation`
+    keccakf(sponge->a);
+    sponge->position = 0;
+  }
+  return dolen;
+}
+
+/*@ requires valid_sponge(sponge);
+  @ requires \valid(`way`+(0..len-1));
+  @ requires sponge_invariant(sponge);
+  @ assigns sponge->a[0..24], sponge->position;
+  @ ensures \old(sponge_invariant(sponge)) ==> sponge_invariant(sponge);
+ */
+static INLINE void _sponge_`name`(register keccak_sponge* const restrict sponge,
+                                 register `"const " if way == "in" else ""`uint8_t* const restrict `way`,
+                                 register const size_t len) {
+  /*@ assert cansqueeze(sponge) > 0;            */
+  /*@ assert sponge_invariant(sponge);          */
+  register size_t remaining = len;
+  register size_t pos = 0;
+  /*@ loop variant remaining - 1;               */
+  while (remaining) {
+    /*@ assert remaining > 0;                   */
+    register size_t done = _sponge_`name`_once(sponge, &`way`[pos], remaining);
+    // Progress: (trivial from definition)
+    /*@ assert done > 0;                        */
+    // No overflow:
+    /*@ assert (remaining - done) > 0;          */
+    remaining -= done;
+    pos += done;
+    /*@ assert remaining == (len - pos);  */
+  }
+  /*@ assert pos == len;                  */
+  /*@ assert remaining == 0;                    */
+}
+
+/*% endfor */
+
+#endif  // KECCAK_CONSTRUCTIONS_SPONGE_OPS_IMPL_H

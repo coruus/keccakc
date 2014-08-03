@@ -4,7 +4,7 @@ c11annex = -D__STDC_WANT_LIB_EXT1__=1
 cstandard = -std=c11 $c11annex
 cnoannoying = -Wno-error=padded -Wno-error=documentation -Wno-sign-conversion
 cwarnings = -Wall -Weverything -Wextra -Wpedantic -pedantic -fcolor-diagnostics $cnoannoying
-csanitize = -fsanitize=local-bounds -fsanitize=address-full -fsanitize=undefined
+csanitize = -fsanitize=local-bounds -fsanitize=address -fsanitize=undefined
 csanextra = -fsanitize=alignment -fsanitize=bool -fsanitize=bounds -fsanitize=enum $
             -fsanitize=float-cast-overflow -fsanitize=float-divide-by-zero $
             -fsanitize=null -fsanitize=object-size -fsanitize=return -fsanitize=shift $

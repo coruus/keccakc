@@ -15,5 +15,6 @@ E(sha3, -5, "error encountered in sha3 fixed-output-length function");
 E(hash_flags, -6, "hash flags wrong");
 E(hash_finalized, -7, "hash already finalized");
 E(hash_not_finalized, -8, "hash not finalized");
+E(hash_rate, -9, "rate of sponge differs from hash function rate");
 
 #endif

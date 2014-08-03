@@ -7,7 +7,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-/*@ behavior nulptr:
+/*@ requires sponge != \null;
+    requires \valid(sponge);
+    behavior nulptr:
       assumes sponge == \null;
       ensures \result < 0;
       assigns \nothing;
@@ -28,40 +30,33 @@
 */
 static INLINE int _sponge_init(register keccak_sponge* const restrict sponge,
                                register const size_t rate) {
-  if (sponge == NULL) {
-    return -2;
-  }
-  if ((rate >= sponge_bytelen) || (rate == 0)) {
-    //@ assert !(0 < rate < 200);
+  if ((rate >= spongelen) || (rate == 0)) {
+    /*@ assert !(0 < rate < spongelen); */
     return -1;
   }
-  //@assert sponge != \null;
-  //@assert (0 < rate < 200);
-  //@assert \valid(sponge);
+  /*@ assert sponge != \null;  */
+  /*@ assert (0 < rate < 200); */
+  /*@ assert \valid(sponge);   */
   sponge->rate = rate;
-  //@assert sponge->rate == rate;
-  //@assert sponge->rate > 0;
-  sponge->absorbed = 0;
-  //@assert sponge->absorbed < sponge->rate;
-  sponge->squeezed = 0;
-  //@assert sponge->squeezed < sponge->rate;
-  //@assert sponge->squeezed == 0;
-  //@assert sponge->absorbed == 0;
-  //@assert !((sponge->absorbed != 0) && (sponge->squeezed != 0));
-  //@assert sponge_invariant(sponge);
-
+  /*@ assert sponge->rate == rate;            */
+  /*@ assert sponge->rate > 0;                */
+  sponge->position = 0;
+  /*@ assert sponge->position < sponge->rate; */
+  /*@ assert sponge->position == 0;           */
+  /*@ assert sponge_invariant(sponge);        */
   sponge->flags = 0;
 
-  //@ loop variant 24 - i;
+#ifdef FRAMAC
+  // This code is specialized for Keccak-f
+  /*@ assert spongelen == 200;        */
+  /*@ loop variant 24 - i;            */
   for (size_t i = 0; i < 25; i++) {
-    //@ assert \valid(sponge->a + i);
+    /*@ assert \valid(sponge->a + i); */
     sponge->a[i] = 0;
   }
-  ////@ loop variant 7 - i;
-  // for (size_t i = 0; i < 7; i++) {
-  //  sponge->padding[i] = sponge_padding[i];
-  //}
-  memset_s(sponge->a, 200, 0, 25 * 8);
+  // End specialized code.
+#endif
+  memset_s(sponge->a, spongelen, 0, spongelen);
 
   return 0;
 }
@@ -80,51 +75,36 @@ static INLINE int _sponge_init(register keccak_sponge* const restrict sponge,
 */
 static INLINE int _sponge_checkinv(register const keccak_sponge* const sponge) {
   register int ret = 0;
-  if (sponge == NULL) {
-    return -2;
-    // HARD_RTE(ptrnull);
-  }
   //@ assert sponge != \null;
-  if ((sponge->absorbed != 0) && (sponge->squeezed != 0)) {
-    // The sponge can be in an absorbing or squeezing state, not both.
-    // (But it is in neither immediately after the permutation is applied.)
-    //@ assert (sponge->absorbed != 0) && (sponge->squeezed) != 0;
-    //@ assert !sponge_invariant(sponge);
-    goto err;
-  }
-  if ((sponge->rate > 199) || (sponge->rate < 1)) {
-    // The sponge must have a rate >= 1 byte and <= 199 bytes.
+  if ((sponge->rate > spongelen) || (sponge->rate < 1)) {
+    // The sponge must have a rate >= 1 byte and <= spongelen bytes.
     // (The 199 byte limit is stronger than is required, but it seems
     // likely that < 4-bit security strength is an error.)
-    //@ assert !(0 < sponge->rate < 200);
-    //@ assert !sponge_invariant(sponge);
+    /*@ assert !(0 < sponge->rate < spongelen);  */
+    /*@ assert !sponge_invariant(sponge);        */
     goto err;
   }
-  if (sponge->absorbed >= sponge->rate) {
-    // sponge->absorbed == sponge->rate: the permutation should have
+  if (sponge->position >= sponge->rate) {
+    // sponge->position == sponge->rate: the permutation should have
     // been applied, but wasn't.
-    // sponge->absorbed > sponge->rate: something is seriously wrong.
-    //@ assert !sponge_invariant(sponge);
-    //@ assert sponge->rate < 200;
+    // sponge->position > sponge->rate: something is seriously wrong.
+    /*@ assert !sponge_invariant(sponge);  */
+    /*@ assert sponge->rate < spongelen;   */
     goto err;
   }
-  if (sponge->squeezed >= sponge->rate) {
-    // As above.
-    //@ assert sponge->absorbed < sponge->rate;
-    goto err;
-  }
-  //@ assert sponge->squeezed < sponge->rate;
-  //@ assert sponge_invariant(sponge);
-  goto okay;
-/*else if (memcmp(sponge->padding, sponge_padding, 7 * 8) != 0) {
-  goto err;
-}*/
-// The sponge's invariants are fine.
+  // The sponge invariant is true.
+  /*@ assert sponge->position < sponge->rate;  */
+  /*@ assert sponge_invariant(sponge);         */
+  /*@ assert ret == 0;                         */
+  goto done;
+  __builtin_unreachable();
+
 err:
+  // The sponge invariant is violated.
+  /*@ assert !sponge_invariant(sponge);  */
   // SOFT_RTE(sponge_invariant);
-  //@ assert !sponge_invariant(sponge);
   ret = -1;
-okay:
+done:
   return ret;
 }
 

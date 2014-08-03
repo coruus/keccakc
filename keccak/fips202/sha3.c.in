@@ -2,9 +2,11 @@
 #include "keccak.h"
 
 #include "keccak/constructions/sponge.h"
+#include "keccak/constructions/sponge-ops.h"
+#include "keccak/constructions/sponge-impl.h"
 #include "keccak/fips202/flags.h"
-#include "keccak/modes/hash/hash-impl.h"
 #include "keccak/rte/check-impl.h"
+#include "keccak/rte/rte.h"
 #include "libutil/libutil.h"
 
 #include <stdint.h>
@@ -31,10 +33,9 @@ sha3_sd = zip(sha3_s, [x//8 for x in sha3_s])
 */
 int sha3_`s`_init(register keccak_sponge* const restrict sponge) {
   checknull(sponge);
-  int err = _hash_init(sponge, 200 - (`digest_length` * 2), flag_sha3_`s` ^ hash_absorbing);
-  //@ assert err == 0;
-  HANDLE_ERR;
-  return err;
+  _sponge_init(sponge, 200 - (`digest_length` * 2));
+  sponge->flags = flag_sha3_`s` ^ hash_absorbing;
+  return 0;
 }
 
 /*@ predicate sha3_`s`_update_err(keccak_sponge* sponge, uint8_t* in) =
@@ -60,9 +61,14 @@ int sha3_`s`_update(register keccak_sponge* const restrict sponge,
                   register const size_t inlen) {
   checknull(sponge);
   checknull(in);
-  int err = _hash_update(sponge, in, inlen, flag_sha3_`s` ^ hash_absorbing);
-  //@assert err == 0;
-  HANDLE_ERR;
+  int err = 0;
+  checkinv(sponge);
+  if (sponge->rate != (200 - (2 * `digest_length`))) {
+     SOFT_RTE(hash_rate);
+  } else if (sponge->flags != (flag_sha3_`s` ^ hash_absorbing)) {
+     SOFT_RTE(hash_flags);
+  }
+  _sponge_absorb(sponge, in, inlen);
   return err;
 }
 
@@ -87,22 +93,31 @@ int sha3_`s`_digest(register keccak_sponge* const restrict sponge,
                   register uint8_t* const restrict out,
                   register const size_t outlen) {
   int err = 0;
-  if (outlen != `digest_length`) {
+  if (outlen > `digest_length`) {
     SOFT_RTE(digestlen);
   }
   checknull(sponge);
   checknull(out);
 
-  err |= _hash_finalize(
-      sponge, pad_sha, flag_sha3_`s` ^ hash_absorbing, flag_sha3_`s` ^ hash_squeezing);
-  //@ assert err == 0;
-  HANDLE_ERR;
+  checkinv(sponge);
+  switch (sponge->flags) {
+    case (flag_sha3_`s` ^ hash_squeezing):
+      SOFT_RTE(hash_finalized);
+      return err;
+    case (flag_sha3_`s` ^ hash_absorbing):
+      // If we're still absorbing, pad the message and apply Keccak-f.
+      _sponge_pad(sponge, pad_sha);
+      sponge->flags = flag_sha3_`s` ^ hash_squeezing;
+      break;
+  }
+
   // Clear the high bytes of the state -- which can never be output for the
   // FOFs -- before copying output (this ensures that, if used as a PMAC,
   // the key can't be recovered even if we abort due to error writing output).
   memclear((uint8_t*)sponge->a + 64, 200 - 64);
-  err |= _hash_squeeze(sponge, out, `digest_length`, flag_sha3_`s` ^ hash_squeezing);
-  //@ assert err == 0;
+  /*@ assert outlen < sponge->rate < spongelen; */
+  _sponge_squeeze(sponge, out, outlen);
+  /*@ assert err == 0; */
   // Then scribble the rest of the state.
   state_scribble(sponge);
   HANDLE_ERR;
@@ -131,7 +146,7 @@ int sha3_`s`(register uint8_t* const restrict out,
   int err = 0;
   checknull(out);
   checknull(in);
-  if (outlen != `digest_length`) {
+  if (outlen > `digest_length`) {
     SOFT_RTE(digestlen);
   }
 

@@ -9,6 +9,7 @@ kf = $p/keccak/keccakf-1600
 f = $p/fips202
 sha3 = $p/fips202/sha3
 shake = $p/fips202/shake
+c = $p/constructions
 
 rule cat_always_inline
   command = cat $in | sed -e 's/inline /inline __attribute__((always_inline)) /' > $out
@@ -18,6 +19,11 @@ rule ginger
   command = ./scripts/ginger.py $in > $out
 
 keccakimpl = $p/keccak/keccakf-1600/keccakf-opt64.c
+
+# The sponge API
+build $c/sponge-api.c: ginger $c/sponge-api.c.in
+build $c/sponge-ops.h: ginger $c/sponge-ops.h.in
+build $c/sponge.h: ginger $c/sponge.h.in
 
 build $f/sha3.c: ginger $f/sha3.c.in
 build $f/shake.c: ginger $f/shake.c.in
@@ -49,8 +55,8 @@ rule testkats
 rule diffkats
   command = diff $in $t/keccak_kats/kats_combined.txt > $out
 
-build $b/kats.txt: testkats
-#build $b/kats-diff.txt: diffkats $b/kats.txt
+build $b/kats.txt: testkats | $b/test-kats
+build $b/kats-diff.txt: diffkats $b/kats.txt | $b/test-kats $b/kats.txt
 
 # The utility library
 s = libutil

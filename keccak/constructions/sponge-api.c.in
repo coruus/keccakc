@@ -1,0 +1,22 @@
+/*yaml:
+SPONGEOPS:
+ - ['absorb', 'in']
+ - ['squeeze', 'out']
+ - ['squexor', 'out']
+ - ['absqueeze', 'io']
+*/
+
+/*% for name, way in SPONGEOPS */
+int keccak_sponge_`name`(register keccak_sponge* const restrict sponge,
+                         register `'const ' if way == 'in' else ''`uint8_t* const restrict `way`,
+                         register const size_t len) {
+  int err = 0;
+  if ((`way` == NULL) || (len > RSIZE_MAX)) {
+    HARD_RTE(rsize);
+  }
+  checkinv(sponge);
+  _sponge_`name`(sponge, `way`, len);
+  /*@ assert err == 0; */
+  return err;
+}
+/*% endfor */

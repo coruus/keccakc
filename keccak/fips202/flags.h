@@ -23,24 +23,23 @@
 #define UINT64_C(VAL) (v##ULL)
 #endif
 
-#define FLAG static const uint64_t
 // Flags indicating sponge state
-FLAG hash_absorbing = UINT64_C(0x53efb6b64647b401);  // AES-256[k=pad('libkeccakc')](pad('hash_absorbing')) 
-FLAG hash_squeezing = UINT64_C(0x44a50aed67ba8c04);  // AES-256[k=pad('libkeccakc')](pad('hash_squeezing')) 
+#define hash_absorbing UINT64_C(0x53efb6b64647b401)  // AES-256[k=pad('libkeccakc')](pad('hash_absorbing')) 
+#define hash_squeezing UINT64_C(0x44a50aed67ba8c04)  // AES-256[k=pad('libkeccakc')](pad('hash_squeezing')) 
 
 // FIPS-202 modes of operation
-FLAG flag_sha3_224 = UINT64_C(0x1fa20e3b59c5ad5b);  // AES-256[k=pad('libkeccakc')](pad('flag_sha3_224')) 
-FLAG flag_sha3_256 = UINT64_C(0x70391fcfef16b030);  // AES-256[k=pad('libkeccakc')](pad('flag_sha3_256')) 
-FLAG flag_sha3_384 = UINT64_C(0x161aeacd69eee08a);  // AES-256[k=pad('libkeccakc')](pad('flag_sha3_384')) 
-FLAG flag_sha3_512 = UINT64_C(0x2ee92ac1b638dceb);  // AES-256[k=pad('libkeccakc')](pad('flag_sha3_512')) 
-FLAG flag_shake128 = UINT64_C(0xdbdf709850f90ff4);  // AES-256[k=pad('libkeccakc')](pad('flag_shake128')) 
-FLAG flag_shake256 = UINT64_C(0xfefb3f8c336ba9a1);  // AES-256[k=pad('libkeccakc')](pad('flag_shake256')) 
+#define flag_sha3_224 UINT64_C(0x1fa20e3b59c5ad5b)  // AES-256[k=pad('libkeccakc')](pad('flag_sha3_224')) 
+#define flag_sha3_256 UINT64_C(0x70391fcfef16b030)  // AES-256[k=pad('libkeccakc')](pad('flag_sha3_256')) 
+#define flag_sha3_384 UINT64_C(0x161aeacd69eee08a)  // AES-256[k=pad('libkeccakc')](pad('flag_sha3_384')) 
+#define flag_sha3_512 UINT64_C(0x2ee92ac1b638dceb)  // AES-256[k=pad('libkeccakc')](pad('flag_sha3_512')) 
+#define flag_shake128 UINT64_C(0xdbdf709850f90ff4)  // AES-256[k=pad('libkeccakc')](pad('flag_shake128')) 
+#define flag_shake256 UINT64_C(0xfefb3f8c336ba9a1)  // AES-256[k=pad('libkeccakc')](pad('flag_shake256')) 
 
 // Extended modes of operation
-FLAG flag_shake192 = UINT64_C(0xac2cbf0b5d705bce);  // AES-256[k=pad('libkeccakc')](pad('flag_shake192')) 
-FLAG flag_shake224 = UINT64_C(0xbc9497ec67635a78);  // AES-256[k=pad('libkeccakc')](pad('flag_shake224')) 
-FLAG flag_shake384 = UINT64_C(0x0306cbe5f8424c0f);  // AES-256[k=pad('libkeccakc')](pad('flag_shake384')) 
-FLAG flag_shake512 = UINT64_C(0xe346f869e944b70b);  // AES-256[k=pad('libkeccakc')](pad('flag_shake512')) 
+#define flag_shake192 UINT64_C(0xac2cbf0b5d705bce)  // AES-256[k=pad('libkeccakc')](pad('flag_shake192')) 
+#define flag_shake224 UINT64_C(0xbc9497ec67635a78)  // AES-256[k=pad('libkeccakc')](pad('flag_shake224')) 
+#define flag_shake384 UINT64_C(0x0306cbe5f8424c0f)  // AES-256[k=pad('libkeccakc')](pad('flag_shake384')) 
+#define flag_shake512 UINT64_C(0xe346f869e944b70b)  // AES-256[k=pad('libkeccakc')](pad('flag_shake512'))
 #undef FLAG
 
 #endif  // KECCAK_FIPS_202_FLAGS_H
