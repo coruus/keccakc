@@ -53,7 +53,7 @@ build $b/test-kats: cexec $t/test-kats.c $lkc
 rule testkats
   command = $b/test-kats > $out
 rule diffkats
-  command = diff $in $t/keccak_kats/kats_combined.txt > $out
+  command = diff -wB $in $t/keccak_kats/kats_combined.txt > $out
 
 build $b/kats.txt: testkats | $b/test-kats
 build $b/kats-diff.txt: diffkats $b/kats.txt | $b/test-kats $b/kats.txt

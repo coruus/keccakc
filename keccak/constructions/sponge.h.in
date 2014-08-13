@@ -75,10 +75,9 @@ int keccak_sponge_init(register keccak_sponge* const restrict sponge,
     disjoint behaviors;
 */
 int keccak_sponge_checkinv(register const keccak_sponge* const sponge);
-
-int keccak_sponge_absorb(register keccak_sponge* const restrict sponge,
-                         register const uint8_t* const restrict in,
-                         register const size_t inlen);
+// TODO spec
+int keccak_sponge_pad(register keccak_sponge* const restrict sponge,
+                      register const uint8_t dsbyte);
 
 /*yaml:
 SPONGEOPS:

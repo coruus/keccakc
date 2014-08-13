@@ -123,6 +123,9 @@ int keccak_sponge_squeeze(register keccak_sponge* const restrict sponge,
 int keccak_sponge_squexor(register keccak_sponge* const restrict sponge,
                           register uint8_t* const restrict io,
                           register const size_t iolen);
+int keccak_sponge_absqueeze(register keccak_sponge* const restrict sponge,
+                            register uint8_t* const restrict io,
+                            register const size_t iolen);
 /* TODO(dlg):
 int keccak_sponge_absorb_xor(register keccak_sponge* const restrict sponge,
                              register const uint8_t* const restrict in,

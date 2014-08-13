@@ -10,6 +10,16 @@
     }                    \
   } while (0)
 
+#define checkrsize(LEN)   \
+  do {                   \
+    if (LEN > (SIZE_MAX >> 1ULL)) {   \
+      HARD_RTE(rsize); \
+    }                    \
+  } while (0)
+
+#define checkbuf(BUF) \
+  checknull(BUF); checkrsize(BUF##LEN)
+
 #define HANDLE_ERR    \
   do {                \
     if (err == 0) {   \
