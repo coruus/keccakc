@@ -11,7 +11,7 @@ include ninjas/tools/clang.ninja
 #include ninjas/tools/compcert.ninja
 
 clocal = -I.
-cflags = $cflags $clocal
+cflags = $cflags $clocal -Weverything -Wpedantic -Wall -Wextra
 #cflags_optim = $cflags
 #cflags_optim = $cflags_optim $clocal
 cflags_optim = $cflags
