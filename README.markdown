@@ -1,27 +1,13 @@
 # C11-clean SHA-3 and SHAKE
 
 An implementation of the [`Keccak-f[1600]` permutation][keccak_site],
-[draft FIPS-202][fips202_site] (SHA-3 and SHAKE), and (eventually)
-the stream cipher and DRBG constructions from the Keccak Team's
-"Cryptographic Sponge Functions v0.1".
+[draft FIPS-202][fips202_site] (SHA-3 and SHAKE).
 
 The goal of this implementation is formal verification of the C
-code.
+code for safety and correctness of the sponge implementation.
 
 This is an alpha release; it has only been (very partially)
 verified.
-
-To build using CMake and ninja:
-
-    cd build
-    cmake -GNinja ..
-    ninja
-
-To build using CMake and make:
-
-    cd build
-    cmake ..
-    make
 
 ## Howto
 
@@ -37,7 +23,6 @@ That's it. Or, if you really need to,
     shake256_init(&sponge);
     shake256_update(&sponge, in, inlen);
     shake256_digest(&sponge, out, outlen);
-
 
 ## Defects
 
@@ -86,14 +71,9 @@ This code is not endorsed by the Keccak Team or, in fact,
 anyone else. The official Keccak code package can be found at
 https://github.com/gvanas/KeccakCodePackage
 
-I, regrettably, cannot say that I endorse their code. In particular,
-it executes undefined behaviors, and is therefore unsafe to include
-in a source tree with functions which are clients of its interface.
-
-(I have contributed some patches to their repo, which have been
-accepted; but these are insufficient. On studying thir code, I felt
-that the best way to understand their mistakes was to make my own.
-Thus this repository; and thus all the verification stuff.)
+Their code has been substantially cleaned up recently; I believe that
+it is now free of undefined behavior. It is much more flexible than
+this code, at the cost of a more complex interface.
 
 ## Warning
 
@@ -107,8 +87,6 @@ Anything in an experimental subdirectory is just that; an experiment.
 
 To build this project, become a daimyo. You will then have enough
 [ninjas][ninja_home].
-
-(Switching to Chrome's `gn` to generate ninjas at present.)
 
 The library *should* build in any C11-compliant environment that
 provides the `memcpy` and `memset` functions and defines the
@@ -133,6 +111,7 @@ Tools under consideration:
 - [CBMC][cbmc_site]
 - [Klee][klee_repo]
 - [VST][vst_site]
+- Suggestions taken...
 
 Done so far:
 
@@ -142,8 +121,8 @@ Done so far:
 freedom from (CompCert-)undefined behavior
 
 3. Frama-C's value analysis plugin over set of symbolic executions
-   (see the verification/frama-c directory for the latest analysis
-   logs)
+(see the verification/frama-c directory for the latest analysis
+logs)
 
 In progress:
 
@@ -206,19 +185,11 @@ Build the code. Then run `scripts/bench.sh`. (TODO) Performance targets.
 `scripts/count.sh` computes the sloc metric for this project. Current
 value: 579.
 
-    % c_count \
-        keccak/keccak/keccakf.c keccak/keccak/keccakf-1600.h keccak/keccak/keccak-1600.h \
-        keccak/constructions/sponge* keccak/modes/hash/hash-impl.h \
-        keccak/fips202/sha3.h keccak/fips202/sha3.template.c keccak/fips202/sha3.template.h \
-        keccak/fips202/shake.h keccak/fips202/shake.template.c keccak/fips202/shake.template.h \
-        keccak/fips202/flags.h keccak/modes/hash/dsbits.h \
-        keccak/rte/rte.h keccak/utils/c11shim.h keccak/utils/xorinto-impl.h | tail -1
+Go's implementation. Value: 194
 
-Go's implementation (SHA-3 only). Value: 144
+    % c_count ~/repos/code.google.com/p/go.crypto/sha3/{sha3,shake,hashes}.go
 
-    % c_count ~/go/src/code.google.com/p/go.crypto/sha3/sha3.go
-
-Target sloc: `sloc(go) * 2 == 288`
+Target sloc: `sloc(go) * 2 == 388`
 
 ### Undefined behavior
 
