@@ -39,6 +39,7 @@ static INLINE int _hash_finalize(register keccak_sponge* const restrict sponge,
                                  register const uint8_t lastbyte,
                                  register const uint64_t oldflags,
                                  register const uint64_t newflags) {
+  register uint8_t* state;
   int err = _sponge_checkinv(sponge);
   if (err != 0) {
     return err;
@@ -48,7 +49,7 @@ static INLINE int _hash_finalize(register keccak_sponge* const restrict sponge,
     SOFT_RTE(hash_flags);
   }
 
-  register uint8_t* state = (uint8_t*)sponge->a;
+  state = (uint8_t*)sponge->a;
 
   // Xor in the MBR padding end-bit.
 

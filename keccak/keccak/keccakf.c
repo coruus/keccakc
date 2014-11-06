@@ -1,7 +1,10 @@
 #include "keccak/keccak/keccakf-1600.h"
 #include "libutil/libutil.h"
 
+#ifndef _MSC_VER
 #include <stdalign.h>
+#endif
+
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
